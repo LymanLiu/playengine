@@ -1,8 +1,8 @@
 export interface EntityOptions {
-    name?: string,
-    position?: number[],
-    rotation?: number[],
-    scale?: number[]
+    name?: string;
+    position?: number[];
+    rotation?: number[];
+    scale?: number[];
 }
 
 export class Entity {
