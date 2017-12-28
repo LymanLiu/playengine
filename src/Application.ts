@@ -1,7 +1,5 @@
-declare var pc : any;
-
-class Application {
-    pcApp;
+export class Application {
+    pcApp : any;
 
     constructor(canvas : HTMLCanvasElement, options : Object) {
         this.pcApp = new pc.Application(canvas, options);
@@ -12,4 +10,3 @@ class Application {
     }
 }
 
-export default Application;
