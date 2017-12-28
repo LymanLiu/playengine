@@ -1,4 +1,4 @@
-interface EntityOptions {
+export interface EntityOptions {
     name?: string,
     position?: number[],
     rotation?: number[],
