@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "rollup --config"
+    "start": "rollup --config --watch"
   },
   "author": "scarletsky <scarletsky1025@gmail.com> (https://github.com/scarletsky)",
   "license": "MIT",
