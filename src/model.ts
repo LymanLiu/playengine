@@ -8,7 +8,7 @@ export class Model extends Entity {
     uid : string;
     aabb : any;
 
-    constructor(args : ModelOptions) {
+    constructor(args : ModelOptions = {}) {
         super(args);
         this.entity.addComponent('model');
         this.aabb = new pc.BoundingBox();

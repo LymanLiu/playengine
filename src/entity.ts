@@ -8,7 +8,7 @@ export interface EntityOptions {
 export class Entity {
     entity : any;
 
-    constructor(args : EntityOptions) {
+    constructor(args : EntityOptions = {}) {
         this.entity = new pc.Entity();
 
         if (args.name) {

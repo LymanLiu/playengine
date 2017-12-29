@@ -7,7 +7,7 @@ export interface CameraOptions extends EntityOptions {
 }
 
 export class Camera extends Entity {
-    constructor(args : CameraOptions) {
+    constructor(args : CameraOptions = {}) {
         super(args);
         this.entity.addComponent('camera');
     }
