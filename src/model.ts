@@ -1,7 +1,8 @@
 import { Entity, EntityOptions } from './entity';
 
 export interface ModelOptions extends EntityOptions {
-    uid?: string
+    uid?: string;
+    type?: string;
 }
 
 export class Model extends Entity {
@@ -15,6 +16,10 @@ export class Model extends Entity {
 
         if (args.uid) {
             this.uid = args.uid;
+        }
+
+        if (args.type) {
+            this.entity.model.type = args.type;
         }
     }
 }
