@@ -1,4 +1,4 @@
-declare module playcanvas {
+declare module pc {
     export class Application {
         constructor(canvas : HTMLCanvasElement, options : any);
         start: () => void;
