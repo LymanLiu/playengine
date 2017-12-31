@@ -1,6 +1,9 @@
 var canvas = document.getElementById('application');
-var app = new pe.Application(canvas, {});
-var orbitCamera = new pe.scripts.OrbitCamera(app.$);
+var app = new pe.Application(canvas, {
+    mouse: new pc.Mouse(canvas)
+});
+new pe.scripts.OrbitCamera(app);
+new pe.scripts.OrbitCameraMouseInput(app);
 
 var camera = new pe.Camera({
     name: 'camera',
@@ -20,7 +23,8 @@ var light = new pe.Light({
 });
 
 camera.entity.addComponent('script');
-camera.entity.script.create(orbitCamera.name);
+camera.entity.script.create('orbitCamera');
+camera.entity.script.create('orbitCameraMouseInput');
 
 app.$.root.addChild(camera.entity);
 app.$.root.addChild(cube.entity);
