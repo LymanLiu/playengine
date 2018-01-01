@@ -1,3 +1,5 @@
+import enhancePlayCanvas from './enhance';
+
 export interface ApplicationOptions {
     keyboard?: any,
     mouse?: any,
@@ -17,8 +19,9 @@ export class Application {
         this.$.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
         this.$.setCanvasResolution(pc.RESOLUTION_AUTO);
         this.$.loader._handlers.texture.crossOrigin = true;
-
         this.$.start();
+
+        enhancePlayCanvas();
     }
 }
 
