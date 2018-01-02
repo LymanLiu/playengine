@@ -3,12 +3,13 @@ import {
     MATERIAL_OBJECT_FIELDS2,
     MATERIAL_ARRAY_FIELDS2
 } from '../constants';
+import { ToJSONOptions } from './asset';
 
 export default function enhance() {
 
     pc.StandardMaterial.prototype.toJSON = (function() {
 
-        var fields = [
+        var fields : string[] = [
             'alphaTest', 'alphaToCoverage',
             'ambient', 'ambientTint',
             'aoMap', 'aoMapChannel', 'aoMapOffset', 'aoMapTiling',
@@ -54,13 +55,9 @@ export default function enhance() {
 
         var defaultMaterial = toJSON.call(pc.ModelHandler.DEFAULT_MATERIAL);
 
-        function toJSON(options) {
-            var result = {};
+        function toJSON(options : ToJSONOptions = {}) {
+            var result : any = {};
             var self = this;
-
-            if (typeof options === 'undefined') {
-                options = {};
-            }
 
             fields.forEach(function(field) {
                 // texture

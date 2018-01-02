@@ -1,4 +1,6 @@
-export function OrbitCamera(app) {
+import { Application } from "../application";
+
+export function OrbitCamera(app : Application) {
 
     var OrbitCamera = pc.createScript('orbitCamera', app.$);
 
@@ -93,7 +95,7 @@ export function OrbitCamera(app) {
 
 
     // Moves the camera to look at an entity and all its children so they are all in the view
-    OrbitCamera.prototype.focus = function(focusEntity) {
+    OrbitCamera.prototype.focus = function(focusEntity : pc.Entity) {
         // Calculate an bounding box that encompasses all the models to frame in the camera view
         this._buildAabb(focusEntity, 0);
 
@@ -305,7 +307,7 @@ export function OrbitCamera(app) {
     };
 
 
-    OrbitCamera.prototype._calcYaw = function(quat) {
+    OrbitCamera.prototype._calcYaw = function(quat : pc.Quat) {
         var transformedForward = new pc.Vec3();
         quat.transformVector(pc.Vec3.FORWARD, transformedForward);
 
@@ -313,7 +315,7 @@ export function OrbitCamera(app) {
     };
 
 
-    OrbitCamera.prototype._clampDistance = function(distance) {
+    OrbitCamera.prototype._clampDistance = function(distance : number) {
         if (this.distanceMax > 0) {
             return pc.math.clamp(distance, this.distanceMin, this.distanceMax);
         } else {
@@ -322,7 +324,7 @@ export function OrbitCamera(app) {
     };
 
 
-    OrbitCamera.prototype._clampPitchAngle = function(pitch) {
+    OrbitCamera.prototype._clampPitchAngle = function(pitch : number) {
         // Negative due as the pitch is inversed since the camera is orbiting the entity
         return pc.math.clamp(pitch, -this.pitchAngleMax, -this.pitchAngleMin);
     };
@@ -331,7 +333,7 @@ export function OrbitCamera(app) {
     OrbitCamera.quatWithoutYaw = new pc.Quat();
     OrbitCamera.yawOffset = new pc.Quat();
 
-    OrbitCamera.prototype._calcPitch = function(quat, yaw) {
+    OrbitCamera.prototype._calcPitch = function(quat : pc.Quat, yaw : number) {
         var quatWithoutYaw = OrbitCamera.quatWithoutYaw;
         var yawOffset = OrbitCamera.yawOffset;
 

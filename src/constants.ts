@@ -19,13 +19,13 @@ var MATERIAL_VECTOR_FIELDS = [
 export var MATERIAL_OBJECT_FIELDS = [
     'cubeMapProjectionBox'
 ];
-export var MATERIAL_OBJECT_FIELDS2 = MATERIAL_OBJECT_FIELDS.reduce(function(prev, next) {
+export var MATERIAL_OBJECT_FIELDS2 = MATERIAL_OBJECT_FIELDS.reduce(function(prev : any, next : string) {
     prev[next] = true;
     return prev;
 }, {});
 
 export var MATERIAL_ARRAY_FIELDS = MATERIAL_COLOR_FIELDS.concat(MATERIAL_VECTOR_FIELDS);
-export var MATERIAL_ARRAY_FIELDS2 = MATERIAL_ARRAY_FIELDS.reduce(function(prev, next) {
+export var MATERIAL_ARRAY_FIELDS2 = MATERIAL_ARRAY_FIELDS.reduce(function(prev : any, next : string) {
     prev[next] = true;
     return prev;
 }, {});
@@ -36,7 +36,7 @@ export var MATERIAL_TEXTURE_FIELDS = [
     'normalMap', 'heightMap', 'sphereMap', 'cubeMap'
 ];
 
-export var MATERIAL_TEXTURE_FIELDS2 = MATERIAL_TEXTURE_FIELDS.reduce(function(prev, next) {
+export var MATERIAL_TEXTURE_FIELDS2 = MATERIAL_TEXTURE_FIELDS.reduce(function(prev : any, next : string) {
     prev[next] = true;
     return prev;
 }, {});
