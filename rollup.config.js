@@ -9,7 +9,9 @@ export default {
         { file: 'dist/playengine.es.js', format: 'es' }
     ],
     plugins: [
-        typescript(),
+        typescript({
+            typescript: require('typescript')
+        }),
         json()
     ]
 }
