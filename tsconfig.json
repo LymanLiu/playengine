@@ -12,6 +12,7 @@
   },
   "include": [
     "src",
+    "playcanvas.d.ts"
   ],
   "exclude": [
     "node_modules"
