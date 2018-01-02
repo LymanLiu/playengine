@@ -1,5 +1,5 @@
 import enhancePlayCanvas from './enhance';
-import { TextureManager } from './assets';
+import { TextureManager, CubemapManager } from './assets';
 
 export interface ApplicationOptions {
     keyboard?: any,
@@ -14,6 +14,7 @@ export interface ApplicationOptions {
 export class Application {
     $ : pc.Application;
     textures : TextureManager;
+    cubemaps: CubemapManager;
 
     constructor(canvas : HTMLCanvasElement, options : ApplicationOptions = {}) {
         this.$ = new pc.Application(canvas, options);
@@ -24,6 +25,7 @@ export class Application {
         this.$.start();
 
         this.textures = new TextureManager(this);
+        this.cubemaps = new CubemapManager(this);
 
         enhancePlayCanvas();
     }

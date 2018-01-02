@@ -1,23 +1,26 @@
 import { Application } from "../application";
 
-interface TextureOptions {
+export interface TextureData {
+    addressu?: string;
+    addressv?: string;
+    anisotropy?: number;
+    magFilter?: string | number;
+    minFilter?: string | number;
+    rgbm?: boolean;
+}
+
+export interface TextureOptions extends TextureData {
     url: string;
     name?: string;
     width?: number;
     height?: number;
-    addressu?: string;
-    addressv?: string;
-    anisotropy?: number;
-    magfilter?: string;
-    minfilter?: string;
-    rgbm?: boolean;
 }
 
 export default class TextureManager {
     private app : Application;
     private _assets : any;
 
-    constructor(app : any) {
+    constructor(app : Application) {
         this.app = app;
         this._assets = {};
     }
@@ -35,8 +38,8 @@ export default class TextureManager {
                 addressu: options.addressu || 'repeat',
                 addressv: options.addressv || 'repeat',
                 anisotropy: options.anisotropy || 1,
-                magfilter: options.magfilter || 'linear',
-                minfilter: options.minfilter || 'linear_mip_linear',
+                magFilter: options.magFilter || 'linear',
+                minFilter: options.minFilter || 'linear_mip_linear',
                 rgbm: typeof options.rgbm === 'undefined' ? false : options.rgbm
             }
         );
