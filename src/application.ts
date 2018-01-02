@@ -1,4 +1,5 @@
 import enhancePlayCanvas from './enhance';
+import { TextureManager } from './assets';
 
 export interface ApplicationOptions {
     keyboard?: any,
@@ -11,7 +12,8 @@ export interface ApplicationOptions {
 }
 
 export class Application {
-    $ : any;
+    $ : pc.Application;
+    textures : TextureManager;
 
     constructor(canvas : HTMLCanvasElement, options : ApplicationOptions = {}) {
         this.$ = new pc.Application(canvas, options);
@@ -20,6 +22,8 @@ export class Application {
         this.$.setCanvasResolution(pc.RESOLUTION_AUTO);
         this.$.loader._handlers.texture.crossOrigin = true;
         this.$.start();
+
+        this.textures = new TextureManager(this);
 
         enhancePlayCanvas();
     }
