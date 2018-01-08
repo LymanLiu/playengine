@@ -11,8 +11,7 @@
     "experimentalDecorators": true
   },
   "include": [
-    "src",
-    "playcanvas.d.ts"
+    "src"
   ],
   "exclude": [
     "node_modules"
