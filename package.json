@@ -13,5 +13,8 @@
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-typescript": "^0.8.1",
     "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "@types/playcanvas": "^0.0.0"
   }
 }
