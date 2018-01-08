@@ -6,7 +6,6 @@ export default {
     output: [
         { file: 'dist/playengine.js', format: 'cjs' },
         { file: 'dist/playengine.umd.js', format: 'umd', name: 'pe' },
-        { file: 'dist/playengine.es.js', format: 'es' }
     ],
     plugins: [
         typescript({
