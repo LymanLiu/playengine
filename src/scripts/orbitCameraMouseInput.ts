@@ -1,23 +1,22 @@
-export function OrbitCameraMouseInput(app) {
+import { createScript, ScriptType } from "./script";
+import { OrbitCamera } from './orbitCamera';
 
-    var OrbitCameraMouseInput = pc.createScript('orbitCameraMouseInput', app.$);
+class OrbitCameraMouseInput extends ScriptType {
+    static __name = 'orbitCameraMouseInput';
 
-    OrbitCameraMouseInput.attributes.add('orbitSensitivity', {
-        type: 'number',
-        default: 0.3,
-        title: 'Orbit Sensitivity',
-        description: 'How fast the camera moves around the orbit. Higher is faster'
-    });
+    attributes = {
+        orbitSensitivity: { type: 'number', default: 0.3, title: 'Orbit Sensitivity', description: 'How fast the camera moves around the orbit. Higher is faster' },
+        distanceSensitivity: { type: 'number', default: 0.15, title: 'Distance Sensitivity', description: 'How fast the camera moves in and out. Higher is faster' }
+    }
 
-    OrbitCameraMouseInput.attributes.add('distanceSensitivity', {
-        type: 'number',
-        default: 0.15,
-        title: 'Distance Sensitivity',
-        description: 'How fast the camera moves in and out. Higher is faster'
-    });
+    static fromWorldPoint = new pc.Vec3();
+    static toWorldPoint = new pc.Vec3();
+    static worldDiff = new pc.Vec3();
 
-    // initialize code called once per entity
-    OrbitCameraMouseInput.prototype.initialize = function() {
+    private orbitCamera: OrbitCamera;
+    private onMouseOut: () => void;
+
+    initialize() {
         this.orbitCamera = this.entity.script.orbitCamera;
 
         if (this.orbitCamera) {
@@ -33,9 +32,10 @@ export function OrbitCameraMouseInput(app) {
         this.lookButtonDown = false;
         this.panButtonDown = false;
         this.lastPoint = new pc.Vec2();
-    };
+        this.onMouseOut = this._onMouseOut.bind(this);
+    }
 
-    OrbitCameraMouseInput.prototype.onEnable = function() {
+    onEnable() {
         this.lookButtonDown = false;
         this.panButtonDown = false;
 
@@ -44,10 +44,10 @@ export function OrbitCameraMouseInput(app) {
         this.app.mouse.on(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
         this.app.mouse.on(pc.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
 
-        window.addEventListener('mouseout', this.onMouseOut.bind(this), false);
+        window.addEventListener('mouseout', this.onMouseOut, false);
     };
 
-    OrbitCameraMouseInput.prototype.onDisable = function() {
+    onDisable() {
         this.lookButtonDown = false;
         this.panButtonDown = false;
 
@@ -56,16 +56,10 @@ export function OrbitCameraMouseInput(app) {
         this.app.mouse.off(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
         this.app.mouse.off(pc.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
 
-        window.removeEventListener('mouseout', this.onMouseOut.bind(this), false);
+        window.removeEventListener('mouseout', this.onMouseOut, false);
     };
 
-
-    OrbitCameraMouseInput.fromWorldPoint = new pc.Vec3();
-    OrbitCameraMouseInput.toWorldPoint = new pc.Vec3();
-    OrbitCameraMouseInput.worldDiff = new pc.Vec3();
-
-
-    OrbitCameraMouseInput.prototype.pan = function(screenPoint) {
+    private pan(screenPoint: pc.MouseEvent) {
         var fromWorldPoint = OrbitCameraMouseInput.fromWorldPoint;
         var toWorldPoint = OrbitCameraMouseInput.toWorldPoint;
         var worldDiff = OrbitCameraMouseInput.worldDiff;
@@ -81,13 +75,11 @@ export function OrbitCameraMouseInput(app) {
         worldDiff.sub2(toWorldPoint, fromWorldPoint);
 
         this.orbitCamera.pivotPoint.add(worldDiff);
-    };
+    }
 
-
-    OrbitCameraMouseInput.prototype.onMouseDown = function(event) {
+    private onMouseDown(event: pc.MouseEvent) {
         event.event.preventDefault();
         event.event.stopPropagation();
-        var self = this;
         switch (event.button) {
             case pc.MOUSEBUTTON_LEFT: {
                 this.lookButtonDown = true;
@@ -98,10 +90,9 @@ export function OrbitCameraMouseInput(app) {
                 this.panButtonDown = true;
             } break;
         }
-    };
+    }
 
-
-    OrbitCameraMouseInput.prototype.onMouseUp = function(event) {
+    private onMouseUp(event: pc.MouseEvent) {
         event.event.preventDefault();
         event.event.stopPropagation();
         var self = this;
@@ -117,13 +108,11 @@ export function OrbitCameraMouseInput(app) {
         }
 
         setTimeout(function() {
-            this.app.fire('app:camera:moveend');
-        }.bind(this), 250);
-    };
+            self.app.fire('app:camera:moveend');
+        }, 250);
+    }
 
-
-    OrbitCameraMouseInput.prototype.onMouseMove = function(event) {
-        var mouse = pc.app.mouse;
+    private onMouseMove(event: pc.MouseEvent) {
         if (this.lookButtonDown) {
             this.orbitCamera.pitch -= event.dy * this.orbitSensitivity;
             this.orbitCamera.yaw -= event.dx * this.orbitSensitivity;
@@ -136,17 +125,17 @@ export function OrbitCameraMouseInput(app) {
         }
 
         this.lastPoint.set(event.x, event.y);
-    };
+    }
 
-
-    OrbitCameraMouseInput.prototype.onMouseWheel = function(event) {
+    private onMouseWheel(event: pc.MouseEvent) {
         this.orbitCamera.distance -= event.wheel * this.distanceSensitivity * (this.orbitCamera.distance * 0.1);
         event.event.preventDefault();
-    };
+    }
 
-
-    OrbitCameraMouseInput.prototype.onMouseOut = function(event) {
+    private _onMouseOut() {
         this.lookButtonDown = false;
         this.panButtonDown = false;
-    };
+    }
 }
+
+export default createScript(OrbitCameraMouseInput);

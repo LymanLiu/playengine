@@ -1,29 +1,37 @@
-export function OrbitCameraTouchInput(app) {
+import { createScript, ScriptType } from "./script";
+import { OrbitCamera } from './orbitCamera';
 
-    var OrbitCameraTouchInput = pc.createScript('orbitCameraTouchInput', app.$);
+class OrbitCameraTouchInput extends ScriptType {
+    static __name = 'orbitCameraTouchInput';
 
-    OrbitCameraTouchInput.attributes.add('orbitSensitivity', {
-        type: 'number',
-        default: 0.4,
-        title: 'Orbit Sensitivity',
-        description: 'How fast the camera moves around the orbit. Higher is faster'
-    });
+    attributes = {
+        orbitSensitivity: {
+            type: 'number',
+            default: 0.4,
+            title: 'Orbit Sensitivity',
+            description: 'How fast the camera moves around the orbit. Higher is faster'
+        },
+        distanceSensitivity: {
+            type: 'number',
+            default: 0.2,
+            title: 'Distance Sensitivity',
+            description: 'How fast the camera moves in and out. Higher is faster'
+        },
+        pinchSensitivity: {
+            type: 'number',
+            default: 1,
+            title: 'Pinch Sensitivity'
+        }
+    };
 
-    OrbitCameraTouchInput.attributes.add('distanceSensitivity', {
-        type: 'number',
-        default: 0.2,
-        title: 'Distance Sensitivity',
-        description: 'How fast the camera moves in and out. Higher is faster'
-    });
+    static fromWorldPoint = new pc.Vec3();
+    static toWorldPoint = new pc.Vec3();
+    static worldDiff = new pc.Vec3();
+    static pinchMidPoint = new pc.Vec2();
 
-    OrbitCameraTouchInput.attributes.add('pinchSensitivity', {
-        type: 'number',
-        default: 1,
-        title: 'Pinch Sensitivity'
-    });
+    orbitCamera: OrbitCamera;
 
-    // initialize code called once per entity
-    OrbitCameraTouchInput.prototype.initialize = function() {
+    initialize() {
         this.orbitCamera = this.entity.script.orbitCamera;
 
         // Store the position of the touch so we can calculate the distance moved
@@ -40,46 +48,44 @@ export function OrbitCameraTouchInput(app) {
 
             this.onEnable();
         }
-    };
+    }
 
-    OrbitCameraTouchInput.prototype.onEnable = function() {
+    onEnable() {
         this.app.touch.on(pc.EVENT_TOUCHSTART, this.onTouchStartEndCancel, this);
         this.app.touch.on(pc.EVENT_TOUCHEND, this.onTouchStartEndCancel, this);
         this.app.touch.on(pc.EVENT_TOUCHCANCEL, this.onTouchStartEndCancel, this);
 
         this.app.touch.on(pc.EVENT_TOUCHMOVE, this.onTouchMove, this);
-    };
+    }
 
-    OrbitCameraTouchInput.prototype.onDisable = function() {
+    onDisable() {
         this.app.touch.off(pc.EVENT_TOUCHSTART, this.onTouchStartEndCancel, this);
         this.app.touch.off(pc.EVENT_TOUCHEND, this.onTouchStartEndCancel, this);
         this.app.touch.off(pc.EVENT_TOUCHCANCEL, this.onTouchStartEndCancel, this);
 
         this.app.touch.off(pc.EVENT_TOUCHMOVE, this.onTouchMove, this);
-    };
+    }
 
-    OrbitCameraTouchInput.prototype.getPinchDistance = function(pointA, pointB) {
+    getPinchDistance(pointA: pc.Touch, pointB: pc.Touch): number {
         // Return the distance between the two points
         var dx = pointA.x - pointB.x;
         var dy = pointA.y - pointB.y;
 
         return Math.sqrt((dx * dx) + (dy * dy));
-    };
+    }
 
 
-    OrbitCameraTouchInput.prototype.calcMidPoint = function(pointA, pointB, result) {
+    calcMidPoint(pointA: pc.Touch, pointB: pc.Touch, result: pc.Vec2) {
         result.set(pointB.x - pointA.x, pointB.y - pointA.y);
         result.scale(0.5);
         result.x += pointA.x;
         result.y += pointA.y;
-    };
+    }
 
-
-    OrbitCameraTouchInput.prototype.onTouchStartEndCancel = function(event) {
+    private onTouchStartEndCancel(event: pc.TouchEvent) {
         event.event.preventDefault();
         // We only care about the first touch for camera rotation. As the user touches the screen,
         // we stored the current touch position
-        var self = this;
         var touches = event.touches;
         if (touches.length == 1) {
             this.lastTouchPoint.set(touches[0].x, touches[0].y);
@@ -89,18 +95,12 @@ export function OrbitCameraTouchInput(app) {
             this.calcMidPoint(touches[0], touches[1], this.lastPinchMidPoint);
         }
 
-        setTimeout(function() {
+        setTimeout(() => {
             this.app.fire('app:camera.moveend');
-        }.bind(this), 250);
-    };
+        }, 250);
+    }
 
-
-    OrbitCameraTouchInput.fromWorldPoint = new pc.Vec3();
-    OrbitCameraTouchInput.toWorldPoint = new pc.Vec3();
-    OrbitCameraTouchInput.worldDiff = new pc.Vec3();
-
-
-    OrbitCameraTouchInput.prototype.pan = function(midPoint) {
+    private pan(midPoint: pc.Vec2) {
         var fromWorldPoint = OrbitCameraTouchInput.fromWorldPoint;
         var toWorldPoint = OrbitCameraTouchInput.toWorldPoint;
         var worldDiff = OrbitCameraTouchInput.worldDiff;
@@ -116,12 +116,9 @@ export function OrbitCameraTouchInput(app) {
         worldDiff.sub2(toWorldPoint, fromWorldPoint);
 
         this.orbitCamera.pivotPoint.add(worldDiff);
-    };
+    }
 
-
-    OrbitCameraTouchInput.pinchMidPoint = new pc.Vec2();
-
-    OrbitCameraTouchInput.prototype.onTouchMove = function(event) {
+    private onTouchMove(event: pc.TouchEvent) {
         var pinchMidPoint = OrbitCameraTouchInput.pinchMidPoint;
 
         // We only care about the first touch for camera rotation. Work out the difference moved since the last event
@@ -155,6 +152,7 @@ export function OrbitCameraTouchInput(app) {
 
             this.lastPinchMidPoint.copy(pinchMidPoint);
         }
-    };
-
+    }
 }
+
+export default createScript(OrbitCameraTouchInput);
