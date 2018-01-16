@@ -1,10 +1,11 @@
 {
   "name": "playengine",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "rollup --config --watch"
+    "start": "NODE_ENV=development rollup --config --watch",
+    "build": "rollup --config"
   },
   "author": "scarletsky <scarletsky1025@gmail.com> (https://github.com/scarletsky)",
   "license": "MIT",

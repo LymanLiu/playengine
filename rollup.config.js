@@ -2,6 +2,17 @@ import typescript from 'rollup-plugin-typescript';
 import serve from 'rollup-plugin-serve';
 import json from 'rollup-plugin-json';
 
+let extraPlugins = [];
+
+if (process.env.NODE_ENV === 'development') {
+    extraPlugins.push(
+        serve({
+            contentBase: 'examples/',
+            port: 3333
+        })
+    );
+}
+
 export default {
     input: 'src/index.ts',
     output: [
@@ -9,13 +20,9 @@ export default {
         { file: 'examples/dist/playengine.umd.js', format: 'umd', name: 'pe' },
     ],
     plugins: [
-        serve({
-            contentBase: 'examples/',
-            port: 3333
-        }),
         typescript({
             typescript: require('typescript')
         }),
         json()
-    ]
+    ].concat(extraPlugins)
 }
