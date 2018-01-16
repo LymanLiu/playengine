@@ -41,7 +41,9 @@ export class ScriptType {
         }
     }
 
-    __initializeAttributes() {
+    __initializeAttributes(force: boolean): void {
+        if (!force && !this.__attributesRaw) return;
+
         for (var key in this.attributes) {
             if (this.__attributesRaw && this.__attributesRaw.hasOwnProperty(key)) {
                 this[key] = this.__attributesRaw[key];
@@ -53,6 +55,8 @@ export class ScriptType {
                 }
             }
         }
+
+        this.__attributesRaw = null;
     }
 }
 

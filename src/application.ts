@@ -1,4 +1,3 @@
-import enhancePlayCanvas from './enhance';
 import { TextureManager, CubemapManager } from './assets';
 
 export interface ApplicationOptions {
@@ -26,8 +25,6 @@ export class Application {
 
         this.textures = new TextureManager(this);
         this.cubemaps = new CubemapManager(this);
-
-        enhancePlayCanvas();
     }
 }
 

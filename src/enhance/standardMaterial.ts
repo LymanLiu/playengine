@@ -3,7 +3,6 @@ import {
     MATERIAL_OBJECT_FIELDS2,
     MATERIAL_ARRAY_FIELDS2
 } from '../constants';
-import { ToJSONOptions } from './asset';
 
 export default function enhance() {
 
@@ -55,7 +54,7 @@ export default function enhance() {
 
         var defaultMaterial = toJSON.call(pc.ModelHandler.DEFAULT_MATERIAL);
 
-        function toJSON(options : ToJSONOptions = {}) {
+        function toJSON(options: any = {}) {
             var result : any = {};
             var self = this;
 
