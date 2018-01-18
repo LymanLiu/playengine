@@ -19,5 +19,8 @@
   },
   "dependencies": {
     "@types/playcanvas": "^0.0.0"
+  },
+  "peerDependencies": {
+    "@scarletsky/playcanvas": "^0.220.0"
   }
 }
