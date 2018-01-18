@@ -44,7 +44,7 @@ export default class CubemapManager {
 
         let cubemapAsset = new pc.Asset(
             options.name,
-            "cubemap",
+            pc.ASSET_CUBEMAP,
             options.cubemap ? { url: options.cubemap } : null,
             {
                 anisotropy: CubemapManager.DEFAULT_CUBEMAP_DATA.anisotropy,

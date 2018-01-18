@@ -20,7 +20,7 @@ export class Application {
         this.$.graphicsDevice.maxPixelRatio = window.devicePixelRatio;
         this.$.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
         this.$.setCanvasResolution(pc.RESOLUTION_AUTO);
-        this.$.loader._handlers.texture.crossOrigin = true;
+        this.$.loader.getHandler(pc.ASSET_TEXTURE).crossOrigin = true;
         this.$.start();
 
         this.textures = new TextureManager(this);

@@ -32,7 +32,7 @@ export default class TextureManager {
     add(options : TextureOptions) {
         let textureAsset = new pc.Asset(
             options.name,
-            'texture',
+            pc.ASSET_TEXTURE,
             { url: options.url },
             {
                 addressu: options.addressu || 'repeat',
