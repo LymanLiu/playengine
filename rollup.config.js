@@ -6,26 +6,6 @@ import serve from 'rollup-plugin-serve';
 import json from 'rollup-plugin-json';
 
 const builds = {
-    dev: {
-        output: {
-            file: 'examples/dist/playengine.umd.js',
-            format: 'umd',
-            name: 'pe',
-            globals: {
-                '@scarletsky/playcanvas': 'pc'
-            }
-        },
-        external: [
-            '@scarletsky/playcanvas'
-        ],
-        plugins: [
-            inject({
-                pc: '@scarletsky/playcanvas'
-            }),
-            resolve(),
-            commonjs()
-        ]
-    },
     cjs: {
         output: {
             file: 'dist/playengine.js',
@@ -55,7 +35,7 @@ const builds = {
 };
 
 function genConfig(name) {
-    const opts = builds[name];
+    const opts = name === 'dev' ? builds.umd : builds[name];
     const config = {
         input: 'src/index.ts',
         output: opts.output,
