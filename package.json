@@ -4,15 +4,21 @@
   "description": "",
   "main": "dist/playengine.js",
   "scripts": {
-    "start": "NODE_ENV=development rollup --config --watch",
-    "build": "rollup --config",
-    "prepare": "npm run build"
+    "start": "rollup --config --watch --environment TARGET:dev",
+    "build:cjs": "rollup --config --environment TARGET:cjs",
+    "build:umd": "rollup --config --environment TARGET:umd",
+    "build": "npm run build:cjs && npm run build:umd",
+    "publishOnly": "npm run build"
   },
   "author": "scarletsky <scarletsky1025@gmail.com> (https://github.com/scarletsky)",
   "license": "MIT",
   "devDependencies": {
+    "@scarletsky/playcanvas": "^0.220.0",
     "rollup": "^0.53.0",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-inject": "^2.0.0",
     "rollup-plugin-json": "^2.3.0",
+    "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-serve": "^0.4.2",
     "rollup-plugin-typescript": "^0.8.1",
     "typescript": "^2.6.2"
