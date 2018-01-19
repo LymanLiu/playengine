@@ -1,19 +1,21 @@
 {
   "name": "playengine",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.1.0",
+  "description": "A WebGL framework based on PlayCanvas engine",
   "main": "dist/playengine.js",
   "scripts": {
     "start": "rollup --config --watch --environment TARGET:dev",
     "build:cjs": "rollup --config --environment TARGET:cjs",
     "build:umd": "rollup --config --environment TARGET:umd",
     "build": "npm run build:cjs && npm run build:umd",
-    "publishOnly": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "author": "scarletsky <scarletsky1025@gmail.com> (https://github.com/scarletsky)",
+  "files": [
+    "dist/"
+  ],
   "license": "MIT",
   "devDependencies": {
-    "@scarletsky/playcanvas": "^0.220.0",
     "rollup": "^0.53.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-inject": "^2.0.0",
