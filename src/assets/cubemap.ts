@@ -20,8 +20,8 @@ export default class CubemapManager {
     private _assets : any;
     private static readonly DEFAULT_CUBEMAP_DATA : CubemapData = {
         anisotropy: 1,
-        magFilter: 1,
-        minFilter: 5,
+        magfilter: 1,
+        minfilter: 5,
         rgbm: true,
         textures: []
     };
@@ -48,8 +48,8 @@ export default class CubemapManager {
             options.cubemap ? { url: options.cubemap } : null,
             {
                 anisotropy: CubemapManager.DEFAULT_CUBEMAP_DATA.anisotropy,
-                magFilter: CubemapManager.DEFAULT_CUBEMAP_DATA.magFilter,
-                minFilter: CubemapManager.DEFAULT_CUBEMAP_DATA.minFilter,
+                magFilter: CubemapManager.DEFAULT_CUBEMAP_DATA.magfilter,
+                minFilter: CubemapManager.DEFAULT_CUBEMAP_DATA.minfilter,
                 rgbm: CubemapManager.DEFAULT_CUBEMAP_DATA.rgbm,
                 textures: textureAssetIds
             }

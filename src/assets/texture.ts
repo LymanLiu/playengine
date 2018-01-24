@@ -4,8 +4,8 @@ export interface TextureData {
     addressu?: string;
     addressv?: string;
     anisotropy?: number;
-    magFilter?: string | number;
-    minFilter?: string | number;
+    magfilter?: string | number;
+    minfilter?: string | number;
     rgbm?: boolean;
 }
 
@@ -38,8 +38,8 @@ export default class TextureManager {
                 addressu: options.addressu || 'repeat',
                 addressv: options.addressv || 'repeat',
                 anisotropy: options.anisotropy || 1,
-                magFilter: options.magFilter || 'linear',
-                minFilter: options.minFilter || 'linear_mip_linear',
+                magfilter: options.magfilter || 'linear',
+                minfilter: options.minfilter || 'linear_mip_linear',
                 rgbm: typeof options.rgbm === 'undefined' ? false : options.rgbm
             }
         );
