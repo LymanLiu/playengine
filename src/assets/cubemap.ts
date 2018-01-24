@@ -79,15 +79,21 @@ export default class CubemapManager {
             }
 
             if (loadFaces) {
-                cubemap.textures.forEach((textureAssetId : number) => {
+                cubemap.textureAssetIds.forEach((textureAssetId : number) => {
                     let textureAsset = this.app.textures.get(textureAssetId);
                     textureAsset.ready(onLoaded);
+                    textureAsset.once('error', reject);
                     this.app.$.assets.load(textureAsset);
                 });
             }
 
             cubemapAsset.ready(onLoaded);
+            cubemapAsset.once('error', reject);
             this.app.$.assets.load(cubemapAsset);
         });
+    }
+
+    setSkybox(asset: pc.Asset) {
+        this.app.$.scene.setSkybox(<pc.Texture[]>asset.resources);
     }
 }
