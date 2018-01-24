@@ -24,13 +24,43 @@ var light = new pe.Light({
     type: 'point'
 });
 
+var cubemap = {
+    name: 'Helipad',
+    cubemap: './assets/cubemaps/Helipad.dds',
+    textures: [
+        {
+            url: './assets/cubemaps/Helipad_posx.png'
+        },
+        {
+            url: './assets/cubemaps/Helipad_negx.png'
+        },
+        {
+            url: './assets/cubemaps/Helipad_posy.png'
+        },
+        {
+            url: './assets/cubemaps/Helipad_negy.png'
+        },
+        {
+            url: './assets/cubemaps/Helipad_posz.png'
+        },
+        {
+            url: './assets/cubemaps/Helipad_negz.png'
+        }
+    ]
+};
 camera.entity.addComponent('script');
 camera.entity.script.create('orbitCamera');
 camera.entity.script.create('orbitCameraMouseInput');
 camera.entity.script.create('orbitCameraTouchInput');
-app.$.root.addChild(camera.entity);
-app.$.root.addChild(cube.entity);
-app.$.root.addChild(light.entity);
 
-camera.entity.script.orbitCamera.focus(cube.entity);
+app.cubemaps.add(cubemap);
+app.cubemaps.load('Helipad', { loadFaces: false }).then(asset => {
+    app.$.root.addChild(camera.entity);
+    app.$.root.addChild(cube.entity);
+    app.$.root.addChild(light.entity);
+    app.$.scene.skyboxIntensity = 2;
+    app.$.scene.skyboxMip = 2;
 
+    app.cubemaps.setSkybox(asset);
+    camera.entity.script.orbitCamera.focus(cube.entity);
+});
