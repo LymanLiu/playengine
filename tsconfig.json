@@ -5,7 +5,7 @@
     "lib": ["es5", "es6", "dom"],
     "noEmitOnError": true,
     "noImplicitAny": true,
-    "noImplicitThis": true,
+    "noImplicitThis": false,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "experimentalDecorators": true

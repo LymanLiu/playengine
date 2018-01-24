@@ -8,7 +8,7 @@ export default function enhance() {
 
     pc.StandardMaterial.prototype.toJSON = (function() {
 
-        var fields : string[] = [
+        var fields: string[] = [
             'alphaTest', 'alphaToCoverage',
             'ambient', 'ambientTint',
             'aoMap', 'aoMapChannel', 'aoMapOffset', 'aoMapTiling',
@@ -55,7 +55,7 @@ export default function enhance() {
         var defaultMaterial = toJSON.call(pc.ModelHandler.DEFAULT_MATERIAL);
 
         function toJSON(options: any = {}) {
-            var result : any = {};
+            var result: any = {};
             var self = this;
 
             fields.forEach(function(field) {

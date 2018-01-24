@@ -1,19 +1,22 @@
 import { Application } from "../application";
 
-export class ScriptType {
+export class ScriptType implements pc.ScriptType {
+    static __name: any;
+    static __attributes?: any;
     static attributes: ScriptAttributes;
+
+    [prop: string]: any;
 
     name: string;
     app: pc.Application;
     entity: pc.Entity;
 
     __attributes: any;
+    __scriptType: ScriptType;
+    __attributesRaw: any;
+
     private _enabled: boolean;
     private _enabledOld: boolean;
-    private __attributesRaw: any;
-    private __scriptType: ScriptType;
-
-    [prop: string]: any;
 
     constructor(args: any = {}) {
         this.app = args.app;
@@ -150,9 +153,10 @@ export class ScriptAttributes {
 
     static rawToVector(args: any, value: any, old: any) {
         let len = parseInt(args.type.slice(3), 10);
+        let VecType: 'Vec2' | 'Vec3' | 'Vec4' = 'Vec' + len as any;
 
-        if (value instanceof pc['Vec' + len]) {
-            if (old instanceof pc['Vec' + len]) {
+        if (value instanceof pc[VecType]) {
+            if (old instanceof pc[VecType]) {
                 old.copy(value);
                 return old;
             } else {
@@ -163,7 +167,7 @@ export class ScriptAttributes {
                 if (typeof (value[i]) !== 'number')
                     return null;
             }
-            if (!old) old = new pc['Vec' + len]();
+            if (!old) old = new pc[VecType]();
 
             for (let i = 0; i < len; i++)
                 old.data[i] = value[i];
@@ -180,7 +184,7 @@ export class ScriptAttributes {
             if (value instanceof pc.Curve || value instanceof pc.CurveSet) {
                 curve = value.clone();
             } else {
-                var CurveType = value.keys[0] instanceof Array ? pc.CurveSet : pc.Curve;
+                let CurveType: any = value.keys[0] instanceof Array ? pc.CurveSet : pc.Curve;
                 curve = new CurveType(value.keys);
                 curve.type = value.type;
             }
@@ -263,7 +267,7 @@ export class ScriptAttributes {
     }
 }
 
-export function createScript(ScriptConstructor: ScriptType) {
+export function createScript<T extends ScriptType>(ScriptConstructor: T) {
     return function(app: Application) {
         ScriptConstructor.attributes = new ScriptAttributes(ScriptConstructor);
         ScriptConstructor.prototype.App = app;
