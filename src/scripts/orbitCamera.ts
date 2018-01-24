@@ -3,7 +3,7 @@ import { createScript, ScriptType } from "./script";
 export class OrbitCamera extends ScriptType {
     static __name = 'orbitCamera';
 
-    attributes = {
+    static __attributes = {
         distanceMax: { type: 'number', default: 0, title: 'Distance Max', description: 'Setting this at 0 will give an infinite distance limit' },
         distanceMin: { type: 'number', default: 0, title: 'Distance Min' },
         pitchAngleMax: { type: 'number', default: 90, title: 'Pitch Angle Max (degrees)' },

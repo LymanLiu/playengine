@@ -4,7 +4,7 @@ import { OrbitCamera } from './orbitCamera';
 class OrbitCameraMouseInput extends ScriptType {
     static __name = 'orbitCameraMouseInput';
 
-    attributes = {
+    static __attributes = {
         orbitSensitivity: { type: 'number', default: 0.3, title: 'Orbit Sensitivity', description: 'How fast the camera moves around the orbit. Higher is faster' },
         distanceSensitivity: { type: 'number', default: 0.15, title: 'Distance Sensitivity', description: 'How fast the camera moves in and out. Higher is faster' }
     }

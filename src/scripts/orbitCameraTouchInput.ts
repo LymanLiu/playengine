@@ -4,7 +4,7 @@ import { OrbitCamera } from './orbitCamera';
 class OrbitCameraTouchInput extends ScriptType {
     static __name = 'orbitCameraTouchInput';
 
-    attributes = {
+    static __attributes = {
         orbitSensitivity: {
             type: 'number',
             default: 0.4,
