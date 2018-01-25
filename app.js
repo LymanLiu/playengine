@@ -60,7 +60,7 @@ app.cubemaps.load('Helipad', { loadFaces: false }).then(asset => {
     app.$.root.addChild(light.entity);
     app.$.scene.skyboxIntensity = 2;
     app.$.scene.skyboxMip = 2;
+    app.$.scene.setSkybox(asset.resources);
 
-    app.cubemaps.setSkybox(asset);
     camera.entity.script.orbitCamera.focus(cube.entity);
 });
