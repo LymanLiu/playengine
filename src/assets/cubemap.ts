@@ -92,8 +92,4 @@ export default class CubemapManager {
             this.app.$.assets.load(cubemapAsset);
         });
     }
-
-    setSkybox(asset: pc.Asset) {
-        this.app.$.scene.setSkybox(<pc.Texture[]>asset.resources);
-    }
 }
