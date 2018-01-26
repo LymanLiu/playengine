@@ -1,4 +1,5 @@
 import { Application } from "../application";
+import { AssetManager } from './asset';
 
 export interface TextureData {
     addressu?: string;
@@ -16,20 +17,17 @@ export interface TextureOptions extends TextureData {
     height?: number;
 }
 
-export default class TextureManager {
-    private app : Application;
-    private _assets : any;
+export default class TextureManager extends AssetManager {
 
-    constructor(app : Application) {
-        this.app = app;
-        this._assets = {};
+    constructor(app: Application) {
+        super(app);
     }
 
-    get(id : number) {
+    get(id: number) {
         return this._assets[id];
     }
 
-    add(options : TextureOptions) {
+    add(options: TextureOptions) {
         let textureAsset = new pc.Asset(
             options.name,
             pc.ASSET_TEXTURE,
@@ -50,17 +48,17 @@ export default class TextureManager {
         return textureAsset;
     }
 
-    remove(id : number) {
+    remove(id: number) {
         this.app.$.assets.remove(this._assets[id]);
         delete this._assets[id];
         return this;
     }
 
-    load(id : number) {
+    load(id: number): Promise<pc.Asset> {
         return new Promise((resolve, reject) => {
             let textureAsset = this._assets[id];
-            textureAsset.on('load', (asset : any) => resolve(asset));
-            textureAsset.on('error', (err : any) => reject(err));
+            textureAsset.on('load', (asset: any) => resolve(asset));
+            textureAsset.on('error', (err: any) => reject(err));
             this.app.$.assets.load(textureAsset);
         })
     }

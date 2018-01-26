@@ -1,4 +1,5 @@
 import { Application } from "../application";
+import { AssetManager } from "./asset";
 import { TextureOptions, TextureData } from "./texture";
 
 interface CubemapOptions {
@@ -15,10 +16,8 @@ interface CubemapLoadOptions {
     loadFaces?: boolean;
 }
 
-export default class CubemapManager {
-    private app : Application;
-    private _assets : any;
-    private static readonly DEFAULT_CUBEMAP_DATA : CubemapData = {
+export default class CubemapManager extends AssetManager {
+    private static readonly DEFAULT_CUBEMAP_DATA: CubemapData = {
         anisotropy: 1,
         magfilter: 1,
         minfilter: 5,
@@ -26,17 +25,16 @@ export default class CubemapManager {
         textures: []
     };
 
-    constructor(app : Application) {
-        this.app = app;
-        this._assets = {};
+    constructor(app: Application) {
+        super(app);
     }
 
-    get(name : string) {
+    get(name: string) {
         return this._assets[name];
     }
 
-    add(options : CubemapOptions) {
-        let textureAssetIds : number[] = [];
+    add(options: CubemapOptions) {
+        let textureAssetIds: number[] = [];
         options.textures.forEach(textureOptions => {
             let textureAsset = this.app.textures.add(textureOptions);
             textureAssetIds.push(textureAsset.id);
@@ -63,7 +61,7 @@ export default class CubemapManager {
         return cubemapAsset;
     }
 
-    load(name : string, options : CubemapLoadOptions = {}) {
+    load(name: string, options: CubemapLoadOptions = {}): Promise<pc.Asset> {
         return new Promise((resolve, reject) => {
             let loadFaces = typeof options.loadFaces === 'boolean' ? options.loadFaces : false;
             let loadedCounts = 0;
@@ -79,7 +77,7 @@ export default class CubemapManager {
             }
 
             if (loadFaces) {
-                cubemap.textureAssetIds.forEach((textureAssetId : number) => {
+                cubemap.textureAssetIds.forEach((textureAssetId: number) => {
                     let textureAsset = this.app.textures.get(textureAssetId);
                     textureAsset.ready(onLoaded);
                     textureAsset.once('error', reject);
