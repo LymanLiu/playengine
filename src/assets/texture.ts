@@ -1,5 +1,5 @@
 import { Application } from "../application";
-import { AssetManager } from './asset';
+import { AssetManager } from "./asset";
 
 export interface TextureData {
     addressu?: string;
@@ -33,12 +33,12 @@ export default class TextureManager extends AssetManager {
             pc.ASSET_TEXTURE,
             { url: options.url },
             {
-                addressu: options.addressu || 'repeat',
-                addressv: options.addressv || 'repeat',
+                addressu: options.addressu || "repeat",
+                addressv: options.addressv || "repeat",
                 anisotropy: options.anisotropy || 1,
-                magfilter: options.magfilter || 'linear',
-                minfilter: options.minfilter || 'linear_mip_linear',
-                rgbm: typeof options.rgbm === 'undefined' ? false : options.rgbm
+                magfilter: options.magfilter || "linear",
+                minfilter: options.minfilter || "linear_mip_linear",
+                rgbm: typeof options.rgbm === "undefined" ? false : options.rgbm
             }
         );
 
@@ -57,8 +57,8 @@ export default class TextureManager extends AssetManager {
     load(id: number): Promise<pc.Asset> {
         return new Promise((resolve, reject) => {
             let textureAsset = this._assets[id];
-            textureAsset.on('load', (asset: any) => resolve(asset));
-            textureAsset.on('error', (err: any) => reject(err));
+            textureAsset.on("load", (asset: any) => resolve(asset));
+            textureAsset.on("error", (err: any) => reject(err));
             this.app.$.assets.load(textureAsset);
         })
     }

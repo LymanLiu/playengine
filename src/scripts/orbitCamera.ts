@@ -1,16 +1,16 @@
 import { createScript, ScriptType } from "./script";
 
 export class OrbitCamera extends ScriptType {
-    static __name = 'orbitCamera';
+    static __name = "orbitCamera";
 
     static __attributes = {
-        distanceMax: { type: 'number', default: 0, title: 'Distance Max', description: 'Setting this at 0 will give an infinite distance limit' },
-        distanceMin: { type: 'number', default: 0, title: 'Distance Min' },
-        pitchAngleMax: { type: 'number', default: 90, title: 'Pitch Angle Max (degrees)' },
-        pitchAngleMin: { type: 'number', default: -90, title: 'Pitch Angle Min (degrees)' },
-        inertiaFactor: { type: 'number', default: 0, title: 'Inertia Factor', description: 'Higher value means that the camera will continue moving after the user has stopped dragging. 0 is fully responsive.' },
-        focusEntity: { type: 'entity', title: 'Focus Entity', description: 'Entity for the camera to focus on. If blank, then the camera will use the whole scene' },
-        frameOnStart: { type: 'boolean', default: true, title: 'Frame on Start', description: 'Frames the entity or scene at the start of the application.' },
+        distanceMax: { type: "number", default: 0, title: "Distance Max", description: "Setting this at 0 will give an infinite distance limit" },
+        distanceMin: { type: "number", default: 0, title: "Distance Min" },
+        pitchAngleMax: { type: "number", default: 90, title: "Pitch Angle Max (degrees)" },
+        pitchAngleMin: { type: "number", default: -90, title: "Pitch Angle Min (degrees)" },
+        inertiaFactor: { type: "number", default: 0, title: "Inertia Factor", description: "Higher value means that the camera will continue moving after the user has stopped dragging. 0 is fully responsive." },
+        focusEntity: { type: "entity", title: "Focus Entity", description: "Entity for the camera to focus on. If blank, then the camera will use the whole scene" },
+        frameOnStart: { type: "boolean", default: true, title: "Frame on Start", description: "Frames the entity or scene at the start of the application." },
     }
 
     distanceMax: number;

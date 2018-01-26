@@ -1,4 +1,4 @@
-import { Entity, EntityOptions } from './entity';
+import { Entity, EntityOptions } from "./entity";
 
 export interface ModelOptions extends EntityOptions {
     uid?: string;
@@ -11,7 +11,7 @@ export class Model extends Entity {
 
     constructor(args : ModelOptions = {}) {
         super(args);
-        this.entity.addComponent('model');
+        this.entity.addComponent("model");
         this.aabb = new pc.BoundingBox();
 
         if (args.uid) {

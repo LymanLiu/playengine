@@ -21,7 +21,7 @@ export class ScriptType implements pc.ScriptType {
     constructor(args: any = {}) {
         this.app = args.app;
         this.entity = args.entity;
-        this._enabled = typeof (args.enabled) === 'boolean' ? args.enabled : true;
+        this._enabled = typeof (args.enabled) === "boolean" ? args.enabled : true;
         this._enabledOld = this.enabled;
         this.__attributes = {};
         this.__attributesRaw = args.attributes || null;
@@ -40,8 +40,8 @@ export class ScriptType implements pc.ScriptType {
 
         if (this.enabled !== this._enabledOld) {
             this._enabledOld = this.enabled;
-            this.fire(this.enabled ? 'enable' : 'disable');
-            this.fire('state', this.enabled);
+            this.fire(this.enabled ? "enable" : "disable");
+            this.fire("state", this.enabled);
         }
     }
 }
@@ -55,13 +55,13 @@ export class ScriptAttributes {
     }
 
     static rawToNumber(value: any) {
-        if (typeof (value) === 'number') {
+        if (typeof (value) === "number") {
             return value;
-        } else if (typeof (value) === 'string') {
+        } else if (typeof (value) === "string") {
             var v = parseInt(value, 10);
             if (isNaN(v)) return null;
             return v;
-        } else if (typeof (value) === 'boolean') {
+        } else if (typeof (value) === "boolean") {
             return !!value;
         } else {
             return null;
@@ -69,7 +69,7 @@ export class ScriptAttributes {
     }
 
     static rawToJSON(value: any) {
-        if (typeof (value) === 'object') {
+        if (typeof (value) === "object") {
             return value;
         } else {
             try {
@@ -88,9 +88,9 @@ export class ScriptAttributes {
                 for (let i = 0; i < value.length; i++) {
                     if (value[i] instanceof pc.Asset) {
                         result.push(value[i]);
-                    } else if (typeof (value[i]) === 'number') {
+                    } else if (typeof (value[i]) === "number") {
                         result.push(app.assets.get(value[i]) || null);
-                    } else if (typeof (value[i]) === 'string') {
+                    } else if (typeof (value[i]) === "string") {
                         result.push(app.assets.get(parseInt(value[i], 10)) || null);
                     } else {
                         result.push(null);
@@ -101,9 +101,9 @@ export class ScriptAttributes {
         } else {
             if (value instanceof pc.Asset) {
                 return value;
-            } else if (typeof (value) === 'number') {
+            } else if (typeof (value) === "number") {
                 return app.assets.get(value) || null;
-            } else if (typeof (value) === 'string') {
+            } else if (typeof (value) === "string") {
                 return app.assets.get(parseInt(value, 10)) || null;
             } else {
                 return null;
@@ -114,7 +114,7 @@ export class ScriptAttributes {
     static rawToEntity(app: pc.Application, value: any) {
         if (value instanceof pc.GraphNode) {
             return value;
-        } else if (typeof (value) === 'string') {
+        } else if (typeof (value) === "string") {
             return app.root.findByGuid(value);
         } else {
             return null;
@@ -131,7 +131,7 @@ export class ScriptAttributes {
             }
         } else if (value instanceof Array && value.length >= 3 && value.length <= 4) {
             for (let i = 0; i < value.length; i++) {
-                if (typeof (value[i]) !== 'number')
+                if (typeof (value[i]) !== "number")
                     return null;
             }
             if (!old) old = new pc.Color();
@@ -140,7 +140,7 @@ export class ScriptAttributes {
                 old.data[i] = (i === 4 && value.length === 3) ? 1 : value[i];
 
             return old;
-        } else if (typeof (value) === 'string' && /#([0-9abcdef]{2}){3,4}/i.test(value)) {
+        } else if (typeof (value) === "string" && /#([0-9abcdef]{2}){3,4}/i.test(value)) {
             if (!old)
                 old = new pc.Color();
 
@@ -153,7 +153,7 @@ export class ScriptAttributes {
 
     static rawToVector(args: any, value: any, old: any) {
         let len = parseInt(args.type.slice(3), 10);
-        let VecType: 'Vec2' | 'Vec3' | 'Vec4' = 'Vec' + len as any;
+        let VecType: "Vec2" | "Vec3" | "Vec4" = "Vec" + len as any;
 
         if (value instanceof pc[VecType]) {
             if (old instanceof pc[VecType]) {
@@ -164,7 +164,7 @@ export class ScriptAttributes {
             }
         } else if (value instanceof Array && value.length === len) {
             for (let i = 0; i < value.length; i++) {
-                if (typeof (value[i]) !== 'number')
+                if (typeof (value[i]) !== "number")
                     return null;
             }
             if (!old) old = new pc[VecType]();
@@ -197,24 +197,24 @@ export class ScriptAttributes {
         // TODO scripts2
         // arrays
         switch (args.type) {
-            case 'boolean':
+            case "boolean":
                 return ScriptAttributes.rawToBoolean(value);
-            case 'number':
+            case "number":
                 return ScriptAttributes.rawToNumber(value);
-            case 'json':
+            case "json":
                 return ScriptAttributes.rawToJSON(value);
-            case 'asset':
+            case "asset":
                 return ScriptAttributes.rawToAsset(app, args, value);
-            case 'entity':
+            case "entity":
                 return ScriptAttributes.rawToEntity(app, value);
-            case 'rgb':
-            case 'rgba':
+            case "rgb":
+            case "rgba":
                 return ScriptAttributes.rawToColor(value, old);
-            case 'vec2':
-            case 'vec3':
-            case 'vec4':
+            case "vec2":
+            case "vec3":
+            case "vec4":
                 return ScriptAttributes.rawToVector(args, value, old);
-            case 'curve':
+            case "curve":
                 return ScriptAttributes.rawToCurve(value);
         }
 
@@ -229,10 +229,10 @@ export class ScriptAttributes {
 
     add(name: string, args: any): void {
         if (this.index[name]) {
-            console.warn('attribute \'' + name + '\' is already defined for script type \'' + this.scriptType.name + '\'');
+            console.warn("attribute \"" + name + "\" is already defined for script type \"" + this.scriptType.name + "\"");
             return;
         } else if (pc.createScript.reservedAttributes[name]) {
-            console.warn('attribute \'' + name + '\' is a reserved attribute name');
+            console.warn("attribute \"" + name + "\" is a reserved attribute name");
             return;
         }
 
@@ -247,8 +247,8 @@ export class ScriptAttributes {
                 // convert to appropriate type
                 this.__attributes[name] = ScriptAttributes.rawToValue(this.app, args, raw, old);
 
-                this.fire('attr', name, this.__attributes[name], old);
-                this.fire('attr:' + name, this.__attributes[name], old);
+                this.fire("attr", name, this.__attributes[name], old);
+                this.fire("attr:" + name, this.__attributes[name], old);
             }
         });
     }
@@ -278,7 +278,7 @@ export function createScript<T extends ScriptType>(ScriptConstructor: T) {
                 if (this.__attributesRaw && this.__attributesRaw.hasOwnProperty(key)) {
                     this[key] = this.__attributesRaw[key];
                 } else if (!this.__attributes.hasOwnProperty(key)) {
-                    if (ScriptConstructor.attributes.index[key].hasOwnProperty('default')) {
+                    if (ScriptConstructor.attributes.index[key].hasOwnProperty("default")) {
                         this[key] = ScriptConstructor.attributes.index[key].default;
                     } else {
                         this[key] = null;

@@ -1,4 +1,4 @@
-import { TextureManager, CubemapManager } from './assets';
+import { TextureManager, CubemapManager } from "./assets";
 
 export interface ApplicationOptions {
     keyboard?: any,

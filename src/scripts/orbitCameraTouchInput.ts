@@ -1,26 +1,26 @@
 import { createScript, ScriptType } from "./script";
-import { OrbitCamera } from './orbitCamera';
+import { OrbitCamera } from "./orbitCamera";
 
 class OrbitCameraTouchInput extends ScriptType {
-    static __name = 'orbitCameraTouchInput';
+    static __name = "orbitCameraTouchInput";
 
     static __attributes = {
         orbitSensitivity: {
-            type: 'number',
+            type: "number",
             default: 0.4,
-            title: 'Orbit Sensitivity',
-            description: 'How fast the camera moves around the orbit. Higher is faster'
+            title: "Orbit Sensitivity",
+            description: "How fast the camera moves around the orbit. Higher is faster"
         },
         distanceSensitivity: {
-            type: 'number',
+            type: "number",
             default: 0.2,
-            title: 'Distance Sensitivity',
-            description: 'How fast the camera moves in and out. Higher is faster'
+            title: "Distance Sensitivity",
+            description: "How fast the camera moves in and out. Higher is faster"
         },
         pinchSensitivity: {
-            type: 'number',
+            type: "number",
             default: 1,
-            title: 'Pinch Sensitivity'
+            title: "Pinch Sensitivity"
         }
     };
 
@@ -43,8 +43,8 @@ class OrbitCameraTouchInput extends ScriptType {
             // Use the same callback for the touchStart, touchEnd and touchCancel events as they
             // all do the same thing which is to deal the possible multiple touches to the screen
 
-            this.on('enable', this.onEnable);
-            this.on('disable', this.onDisable);
+            this.on("enable", this.onEnable);
+            this.on("disable", this.onDisable);
 
             this.onEnable();
         }
@@ -96,7 +96,7 @@ class OrbitCameraTouchInput extends ScriptType {
         }
 
         setTimeout(() => {
-            this.app.fire('app:camera.moveend');
+            this.app.fire("app:camera.moveend");
         }, 250);
     }
 
@@ -131,7 +131,7 @@ class OrbitCameraTouchInput extends ScriptType {
             this.orbitCamera.yaw -= (touch.x - this.lastTouchPoint.x) * this.orbitSensitivity;
             this.lastTouchPoint.set(touch.x, touch.y);
 
-            this.app.fire('app:camera:movestart');
+            this.app.fire("app:camera:movestart");
 
         } else if (touches.length == 2) {
             // Calculate the difference in pinch distance since the last event
@@ -147,7 +147,7 @@ class OrbitCameraTouchInput extends ScriptType {
             if (Math.abs(diffInPinchDistance) <= this.pinchSensitivity) {
                 this.pan(pinchMidPoint);
 
-                this.app.fire('app:camera:movestart');
+                this.app.fire("app:camera:movestart");
             }
 
             this.lastPinchMidPoint.copy(pinchMidPoint);

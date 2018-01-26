@@ -1,12 +1,12 @@
 import { createScript, ScriptType } from "./script";
-import { OrbitCamera } from './orbitCamera';
+import { OrbitCamera } from "./orbitCamera";
 
 class OrbitCameraMouseInput extends ScriptType {
-    static __name = 'orbitCameraMouseInput';
+    static __name = "orbitCameraMouseInput";
 
     static __attributes = {
-        orbitSensitivity: { type: 'number', default: 0.3, title: 'Orbit Sensitivity', description: 'How fast the camera moves around the orbit. Higher is faster' },
-        distanceSensitivity: { type: 'number', default: 0.15, title: 'Distance Sensitivity', description: 'How fast the camera moves in and out. Higher is faster' }
+        orbitSensitivity: { type: "number", default: 0.3, title: "Orbit Sensitivity", description: "How fast the camera moves around the orbit. Higher is faster" },
+        distanceSensitivity: { type: "number", default: 0.15, title: "Distance Sensitivity", description: "How fast the camera moves in and out. Higher is faster" }
     }
 
     static fromWorldPoint = new pc.Vec3();
@@ -20,8 +20,8 @@ class OrbitCameraMouseInput extends ScriptType {
         this.orbitCamera = this.entity.script.orbitCamera;
 
         if (this.orbitCamera) {
-            this.on('enable', this.onEnable);
-            this.on('disable', this.onDisable);
+            this.on("enable", this.onEnable);
+            this.on("disable", this.onDisable);
             this.onEnable();
         }
 
@@ -44,7 +44,7 @@ class OrbitCameraMouseInput extends ScriptType {
         this.app.mouse.on(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
         this.app.mouse.on(pc.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
 
-        window.addEventListener('mouseout', this.onMouseOut, false);
+        window.addEventListener("mouseout", this.onMouseOut, false);
     };
 
     onDisable() {
@@ -56,7 +56,7 @@ class OrbitCameraMouseInput extends ScriptType {
         this.app.mouse.off(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
         this.app.mouse.off(pc.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
 
-        window.removeEventListener('mouseout', this.onMouseOut, false);
+        window.removeEventListener("mouseout", this.onMouseOut, false);
     };
 
     private pan(screenPoint: pc.MouseEvent) {
@@ -108,7 +108,7 @@ class OrbitCameraMouseInput extends ScriptType {
         }
 
         setTimeout(function() {
-            self.app.fire('app:camera:moveend');
+            self.app.fire("app:camera:moveend");
         }, 250);
     }
 
@@ -117,11 +117,11 @@ class OrbitCameraMouseInput extends ScriptType {
             this.orbitCamera.pitch -= event.dy * this.orbitSensitivity;
             this.orbitCamera.yaw -= event.dx * this.orbitSensitivity;
 
-            this.app.fire('app:camera:movestart');
+            this.app.fire("app:camera:movestart");
         } else if (this.panButtonDown) {
             this.pan(event);
 
-            this.app.fire('app:camera:movestart');
+            this.app.fire("app:camera:movestart");
         }
 
         this.lastPoint.set(event.x, event.y);
