@@ -53,10 +53,7 @@ export default class CubemapManager extends AssetManager {
             }
         );
         this.app.$.assets.add(cubemapAsset);
-        this._assets[options.name] = {
-            cubemapAsset: cubemapAsset,
-            textureAssetIds: textureAssetIds
-        };
+        this._assets[options.name] = cubemapAsset;
 
         return cubemapAsset;
     }
@@ -66,18 +63,17 @@ export default class CubemapManager extends AssetManager {
             let loadFaces = typeof options.loadFaces === "boolean" ? options.loadFaces : false;
             let loadedCounts = 0;
             let totalCounts = loadFaces ? 7 : 1;
-            let cubemap = this._assets[name];
-            let cubemapAsset = cubemap.cubemapAsset;
+            let cubemapAsset = this._assets[name];
 
             let onLoaded = () => {
                 loadedCounts++;
                 if (loadedCounts === totalCounts) {
-                    resolve(cubemap.cubemapAsset);
+                    resolve(cubemapAsset);
                 }
             }
 
             if (loadFaces) {
-                cubemap.textureAssetIds.forEach((textureAssetId: number) => {
+                cubemapAsset.data.textures.forEach((textureAssetId: number) => {
                     let textureAsset = this.app.textures.get(textureAssetId);
                     textureAsset.ready(onLoaded);
                     textureAsset.once("error", reject);
