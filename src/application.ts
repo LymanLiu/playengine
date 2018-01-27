@@ -1,4 +1,4 @@
-import { TextureManager, CubemapManager, MaterialManager } from "./assets";
+import { TextureManager, CubemapManager, MaterialManager, ModelManager } from "./assets";
 import enhancePlayCanvas from "./enhance";
 
 export interface ApplicationOptions {
@@ -16,6 +16,7 @@ export class Application {
     textures: TextureManager;
     cubemaps: CubemapManager;
     materials: MaterialManager;
+    models: ModelManager;
 
     isEnhanced = false;
 
@@ -30,6 +31,7 @@ export class Application {
         this.textures = new TextureManager(this);
         this.cubemaps = new CubemapManager(this);
         this.materials = new MaterialManager(this);
+        this.models = new ModelManager(this);
     }
 
     enhance() {

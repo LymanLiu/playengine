@@ -3,6 +3,7 @@ import { Entity, EntityOptions } from "./entity";
 export interface ModelOptions extends EntityOptions {
     uid?: string;
     type?: string;
+    asset?: number | pc.Asset
 }
 
 export class Model extends Entity {
@@ -20,6 +21,10 @@ export class Model extends Entity {
 
         if (args.type) {
             this.entity.model.type = args.type;
+        }
+
+        if (args.asset) {
+            this.entity.model.asset = args.asset;
         }
     }
 }
