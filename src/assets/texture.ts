@@ -1,5 +1,5 @@
 import { Application } from "../application";
-import { AssetManager } from "./asset";
+import { AssetManager, AssetData } from "./asset";
 
 export interface TextureData {
     addressu?: string;
@@ -10,9 +10,8 @@ export interface TextureData {
     rgbm?: boolean;
 }
 
-export interface TextureOptions extends TextureData {
+export interface TextureOptions extends AssetData, TextureData {
     url: string;
-    name?: string;
     width?: number;
     height?: number;
 }
@@ -23,8 +22,8 @@ export default class TextureManager extends AssetManager {
         super(app);
     }
 
-    get(id: number) {
-        return this._assets[id];
+    get(identity: number) {
+        return this._assets[identity];
     }
 
     add(options: TextureOptions) {
@@ -48,18 +47,9 @@ export default class TextureManager extends AssetManager {
         return textureAsset;
     }
 
-    remove(id: number) {
-        this.app.$.assets.remove(this._assets[id]);
-        delete this._assets[id];
+    remove(identity: number) {
+        this.app.$.assets.remove(this._assets[identity]);
+        delete this._assets[identity];
         return this;
-    }
-
-    load(id: number): Promise<pc.Asset> {
-        return new Promise((resolve, reject) => {
-            let textureAsset = this._assets[id];
-            textureAsset.on("load", (asset: any) => resolve(asset));
-            textureAsset.on("error", (err: any) => reject(err));
-            this.app.$.assets.load(textureAsset);
-        })
     }
 }

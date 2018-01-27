@@ -23,13 +23,4 @@ export default class MaterialManager extends AssetManager {
 
         return materialAsset;
     }
-
-    load(identity: number): Promise<pc.Asset> {
-        return new Promise((resolve, reject) => {
-            let materialAsset = this._assets[identity];
-            materialAsset.on("load", resolve);
-            materialAsset.on("error", reject);
-            this.app.$.assets.load(materialAsset);
-        });
-    }
 }
