@@ -1,14 +1,13 @@
 import { Application } from "../application";
-import { AssetManager } from "./asset";
+import { AssetManager, AssetData } from "./asset";
 import { TextureOptions, TextureData } from "./texture";
 
-interface CubemapOptions {
-    name: string;
+interface CubemapData extends AssetData {
     cubemap: string;
-    textures: TextureOptions[];
+    textures: TextureData[];
 }
 
-interface CubemapData extends TextureData {
+interface CubemapOptions extends TextureOptions {
     textures: number[];
 }
 
@@ -17,7 +16,7 @@ interface CubemapLoadOptions {
 }
 
 export default class CubemapManager extends AssetManager {
-    private static readonly DEFAULT_CUBEMAP_DATA: CubemapData = {
+    private static readonly DEFAULT_CUBEMAP_OPTIONS: CubemapOptions = {
         anisotropy: 1,
         magfilter: 1,
         minfilter: 5,
@@ -33,27 +32,27 @@ export default class CubemapManager extends AssetManager {
         return this._assets[name];
     }
 
-    add(options: CubemapOptions) {
+    add(data: CubemapData) {
         let textureAssetIds: number[] = [];
-        options.textures.forEach(textureOptions => {
-            let textureAsset = this.app.textures.add(textureOptions);
+        data.textures.forEach(textureData => {
+            let textureAsset = this.app.textures.add(textureData);
             textureAssetIds.push(textureAsset.id);
         });
 
         let cubemapAsset = new pc.Asset(
-            options.name,
+            data.name,
             pc.ASSET_CUBEMAP,
-            options.cubemap ? { url: options.cubemap } : null,
+            data.cubemap ? { url: data.cubemap } : null,
             {
-                anisotropy: CubemapManager.DEFAULT_CUBEMAP_DATA.anisotropy,
-                magFilter: CubemapManager.DEFAULT_CUBEMAP_DATA.magfilter,
-                minFilter: CubemapManager.DEFAULT_CUBEMAP_DATA.minfilter,
-                rgbm: CubemapManager.DEFAULT_CUBEMAP_DATA.rgbm,
+                anisotropy: CubemapManager.DEFAULT_CUBEMAP_OPTIONS.anisotropy,
+                magFilter: CubemapManager.DEFAULT_CUBEMAP_OPTIONS.magfilter,
+                minFilter: CubemapManager.DEFAULT_CUBEMAP_OPTIONS.minfilter,
+                rgbm: CubemapManager.DEFAULT_CUBEMAP_OPTIONS.rgbm,
                 textures: textureAssetIds
             }
         );
         this.app.$.assets.add(cubemapAsset);
-        this._assets[options.name] = cubemapAsset;
+        this._assets[data.name] = cubemapAsset;
 
         return cubemapAsset;
     }

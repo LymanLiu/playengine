@@ -1,7 +1,7 @@
 import { Application } from "../application";
 import { AssetManager, AssetData } from "./asset";
 
-export interface TextureData {
+export interface TextureOptions {
     addressu?: string;
     addressv?: string;
     anisotropy?: number;
@@ -10,7 +10,7 @@ export interface TextureData {
     rgbm?: boolean;
 }
 
-export interface TextureOptions extends AssetData, TextureData {
+export interface TextureData extends AssetData, TextureOptions {
     url: string;
     width?: number;
     height?: number;
@@ -26,18 +26,18 @@ export default class TextureManager extends AssetManager {
         return this._assets[identity];
     }
 
-    add(options: TextureOptions) {
+    add(data: TextureData) {
         let textureAsset = new pc.Asset(
-            options.name,
+            data.name,
             pc.ASSET_TEXTURE,
-            { url: options.url },
+            { url: data.url },
             {
-                addressu: options.addressu || "repeat",
-                addressv: options.addressv || "repeat",
-                anisotropy: options.anisotropy || 1,
-                magfilter: options.magfilter || "linear",
-                minfilter: options.minfilter || "linear_mip_linear",
-                rgbm: typeof options.rgbm === "undefined" ? false : options.rgbm
+                addressu: data.addressu || "repeat",
+                addressv: data.addressv || "repeat",
+                anisotropy: data.anisotropy || 1,
+                magfilter: data.magfilter || "linear",
+                minfilter: data.minfilter || "linear_mip_linear",
+                rgbm: typeof data.rgbm === "undefined" ? false : data.rgbm
             }
         );
 
