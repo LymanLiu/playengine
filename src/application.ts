@@ -1,4 +1,5 @@
 import { TextureManager, CubemapManager, MaterialManager } from "./assets";
+import enhancePlayCanvas from "./enhance";
 
 export interface ApplicationOptions {
     keyboard?: any,
@@ -16,6 +17,8 @@ export class Application {
     cubemaps: CubemapManager;
     materials: MaterialManager;
 
+    isEnhanced = false;
+
     constructor(canvas: HTMLCanvasElement, options: ApplicationOptions = {}) {
         this.$ = new pc.Application(canvas, options);
         this.$.graphicsDevice.maxPixelRatio = window.devicePixelRatio;
@@ -27,6 +30,11 @@ export class Application {
         this.textures = new TextureManager(this);
         this.cubemaps = new CubemapManager(this);
         this.materials = new MaterialManager(this);
+    }
+
+    enhance() {
+        enhancePlayCanvas();
+        this.isEnhanced = true;
     }
 }
 
