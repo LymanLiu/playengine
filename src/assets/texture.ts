@@ -22,10 +22,6 @@ export default class TextureManager extends AssetManager {
         super(app);
     }
 
-    get(identity: number) {
-        return this._assets[identity];
-    }
-
     add(data: TextureData) {
         let textureAsset = new pc.Asset(
             data.name,

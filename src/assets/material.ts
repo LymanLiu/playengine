@@ -11,10 +11,6 @@ export default class MaterialManager extends AssetManager {
         super(app);
     }
 
-    get(identity: number) {
-        return this._assets[identity];
-    }
-
     add(data: MaterialData) {
         let materialAsset = new pc.Asset(data.name, pc.ASSET_MATERIAL, null, data);
 

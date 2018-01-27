@@ -28,10 +28,6 @@ export default class CubemapManager extends AssetManager {
         super(app);
     }
 
-    get(name: string) {
-        return this._assets[name];
-    }
-
     add(data: CubemapData) {
         let textureAssetIds: number[] = [];
         data.textures.forEach(textureData => {
