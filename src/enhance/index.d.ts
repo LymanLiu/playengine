@@ -8,4 +8,5 @@ declare namespace pc {
     }
 
     interface StandardMaterial extends EnhanceAsset { }
+    interface BoundingBox extends EnhanceAsset { }
 }
