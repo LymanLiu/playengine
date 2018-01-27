@@ -1,5 +1,10 @@
 import { Application } from "../application";
 
+export interface AssetData {
+    uid?: string;
+    name?: string;
+}
+
 export abstract class AssetManager {
     protected app: Application;
     protected _assets: any;
@@ -11,5 +16,5 @@ export abstract class AssetManager {
 
     abstract get(identity: string | number): pc.Asset;
     abstract add(data: any): any;
-    abstract load(identity: string | number, options: any): Promise<pc.Asset>;
+    abstract load(identity: string | number, options?: any): Promise<pc.Asset>;
 }

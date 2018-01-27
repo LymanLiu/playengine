@@ -1,4 +1,4 @@
-import { TextureManager, CubemapManager } from "./assets";
+import { TextureManager, CubemapManager, MaterialManager } from "./assets";
 
 export interface ApplicationOptions {
     keyboard?: any,
@@ -11,11 +11,12 @@ export interface ApplicationOptions {
 }
 
 export class Application {
-    $ : pc.Application;
-    textures : TextureManager;
+    $: pc.Application;
+    textures: TextureManager;
     cubemaps: CubemapManager;
+    materials: MaterialManager;
 
-    constructor(canvas : HTMLCanvasElement, options : ApplicationOptions = {}) {
+    constructor(canvas: HTMLCanvasElement, options: ApplicationOptions = {}) {
         this.$ = new pc.Application(canvas, options);
         this.$.graphicsDevice.maxPixelRatio = window.devicePixelRatio;
         this.$.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
@@ -25,6 +26,7 @@ export class Application {
 
         this.textures = new TextureManager(this);
         this.cubemaps = new CubemapManager(this);
+        this.materials = new MaterialManager(this);
     }
 }
 
