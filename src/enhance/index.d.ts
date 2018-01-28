@@ -4,11 +4,13 @@ declare namespace pc {
     }
 
     interface EnhanceAsset {
-        toJSON(options: ToJSONOptions): object;
+        toJSON(options?: ToJSONOptions): object;
     }
 
     interface StandardMaterial extends EnhanceAsset {
         [prop: string]: any;
     }
+
+    interface Texture extends EnhanceAsset { }
     interface BoundingBox extends EnhanceAsset { }
 }
