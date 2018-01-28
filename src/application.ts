@@ -19,6 +19,9 @@ export class Application {
     models: ModelManager;
 
     isEnhanced = false;
+    isAutoResized = false;
+
+    private onResize: (event?: any) => void;
 
     constructor(canvas: HTMLCanvasElement, options: ApplicationOptions = {}) {
         this.$ = new pc.Application(canvas, options);
@@ -32,11 +35,28 @@ export class Application {
         this.cubemaps = new CubemapManager(this);
         this.materials = new MaterialManager(this);
         this.models = new ModelManager(this);
+
+        this.onResize = this._onResize.bind(this);
     }
 
     enhance() {
         enhancePlayCanvas();
         this.isEnhanced = true;
+
+        return this;
+    }
+
+    autoResize() {
+        window.addEventListener('resize', this.onResize, false);
+        window.addEventListener('orientationchange', this.onResize, false);
+        this.isAutoResized = true;
+
+        return this;
+    }
+
+    private _onResize() {
+        let canvas = this.$.graphicsDevice.canvas;
+        this.$.resizeCanvas(canvas.width, canvas.height);
     }
 }
 
