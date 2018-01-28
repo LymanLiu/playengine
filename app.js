@@ -3,7 +3,7 @@ var app = new pe.Application(canvas, {
     mouse: new pc.Mouse(canvas),
     touch: 'ontouchstart' in window ? new pc.TouchDevice(canvas) : null
 });
-app.enhance();
+app.enhance().autoResize();
 var orbitCamera = new pe.scripts.OrbitCamera(app);
 var orbitCameraMouseInput = new pe.scripts.OrbitCameraMouseInput(app);
 var orbitCameraTouchInput = new pe.scripts.OrbitCameraTouchInput(app);
