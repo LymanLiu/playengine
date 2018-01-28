@@ -8,7 +8,7 @@ export default function enhance() {
 
     pc.StandardMaterial.prototype.toJSON = (function() {
 
-        var fields: string[] = [
+        let fields = [
             "alphaTest", "alphaToCoverage",
             "ambient", "ambientTint",
             "aoMap", "aoMapChannel", "aoMapOffset", "aoMapTiling",
@@ -52,18 +52,17 @@ export default function enhance() {
             "useMetalness", "useSkybox",
         ];
 
-        var defaultMaterial = toJSON.call(pc.ModelHandler.DEFAULT_MATERIAL);
+        let defaultMaterial = toJSON.call(pc.ModelHandler.DEFAULT_MATERIAL);
 
-        function toJSON(options: any = {}) {
-            var result: any = {};
-            var self = this;
+        function toJSON(options: pc.ToJSONOptions = {}): object {
+            let result: any = {};
 
-            fields.forEach(function(field) {
+            fields.forEach(field => {
                 // texture
                 if (MATERIAL_TEXTURE_FIELDS2[field]) {
 
-                    if (self[field] !== null) {
-                        result[field] = self[field].name;
+                    if (this[field] !== null) {
+                        result[field] = this[field].name;
                     } else {
                         result[field] = null;
                     }
@@ -71,32 +70,32 @@ export default function enhance() {
                     // color or vector
                 } else if (MATERIAL_ARRAY_FIELDS2[field]) {
 
-                    result[field] = Array.from(self[field].data);
+                    result[field] = Array.from(this[field].data);
 
                 } else if (MATERIAL_OBJECT_FIELDS2[field]) {
 
-                    result[field] = self[field] ? self[field].toJSON() : null;
+                    result[field] = this[field] ? this[field].toJSON() : null;
 
                     // atom
                 } else {
 
                     if (field === "bumpiness") {
-                        result["bumpMapFactor"] = self[field];
+                        result["bumpMapFactor"] = this[field];
                     } else {
-                        result[field] = self[field];
+                        result[field] = this[field];
                     }
                 }
             });
 
             if (options.diff) {
-                fields.forEach(function(field) {
+                fields.forEach(field => {
 
                     if (field === "bumpiness") {
                         field = "bumpMapFactor";
                     }
 
-                    var value1 = defaultMaterial[field];
-                    var value2 = result[field];
+                    let value1 = defaultMaterial[field];
+                    let value2 = result[field];
 
                     // test two array is equal or not
                     if (MATERIAL_ARRAY_FIELDS2[field]) {
