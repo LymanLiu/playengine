@@ -29,7 +29,6 @@ Promise.all([
     fetch('./assets/cubemaps/data.json').then(res => res.json()),
     fetch('./assets/models/playcanvas/data.json').then(res => res.json()),
 ]).then(res => {
-    console.log(res);
     var cubemap = res[0];
     var model = res[1];
 
