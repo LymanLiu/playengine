@@ -7,6 +7,8 @@ declare namespace pc {
         toJSON(options: ToJSONOptions): object;
     }
 
-    interface StandardMaterial extends EnhanceAsset { }
+    interface StandardMaterial extends EnhanceAsset {
+        [prop: string]: any;
+    }
     interface BoundingBox extends EnhanceAsset { }
 }

@@ -21,6 +21,7 @@ export interface ModelData extends AssetData {
 export interface ModelDataOptions {
     area: number;
     mapping: ModelMapping[];
+    assets: number[];
     [key: string]: any;
 }
 
@@ -41,13 +42,15 @@ export default class ModelManager extends AssetManager {
         let materialsMap: ModelAssetsMap = {};
         let modelDataOptions: ModelDataOptions = {
             area: 0,
-            mapping: []
+            mapping: [],
+            assets: []
         };
 
         if (data.textures && data.textures.length > 0) {
             data.textures.forEach(textureData => {
                 let textureAsset = this.app.textures.add(textureData);
                 texturesMap[textureData.name] = textureAsset.id;
+                modelDataOptions.assets.push(textureAsset.id);
                 assets.push(textureAsset.id);
             });
         }
@@ -60,13 +63,12 @@ export default class ModelManager extends AssetManager {
 
                 let materialAsset = this.app.materials.add(materialData);
                 materialsMap[materialData.name] = materialAsset.id;
+                modelDataOptions.assets.push(materialAsset.id);
                 assets.push(materialAsset.id);
             });
 
             modelDataOptions.mapping = data.mapping.map(name => ({ material: materialsMap[name] }));
         }
-
-        modelDataOptions.assets = [].concat(Object.values(texturesMap)).concat(Object.values(materialsMap));
 
         let modelAsset = new pc.Asset(
             data.name,
