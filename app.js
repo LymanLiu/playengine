@@ -48,8 +48,11 @@ Promise.all([
         app.$.root.addChild(camera.entity);
         app.$.root.addChild(cube.entity);
         app.$.root.addChild(light.entity);
-        app.$.scene.skyboxIntensity = 2;
-        app.$.scene.skyboxMip = 2;
+        app.$.scene.skyboxIntensity = 1;
+        app.$.scene.skyboxMip = 1;
+        app.$.scene.abmientLight = new pc.Color(0.2, 0.2, 0.2);
+        app.$.scene.gammaCorrection = 2;
+        app.$.scene.toneMapping = 3;
         app.$.scene.setSkybox(res[1].resources);
 
         camera.entity.script.orbitCamera.focus(cube.entity);
