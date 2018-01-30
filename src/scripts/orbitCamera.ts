@@ -11,7 +11,7 @@ export class OrbitCamera extends ScriptType {
         inertiaFactor: { type: "number", default: 0, title: "Inertia Factor", description: "Higher value means that the camera will continue moving after the user has stopped dragging. 0 is fully responsive." },
         focusEntity: { type: "entity", title: "Focus Entity", description: "Entity for the camera to focus on. If blank, then the camera will use the whole scene" },
         frameOnStart: { type: "boolean", default: true, title: "Frame on Start", description: "Frames the entity or scene at the start of the application." },
-    }
+    };
 
     distanceMax: number;
     distanceMin: number;

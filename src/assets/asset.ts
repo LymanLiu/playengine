@@ -9,7 +9,7 @@ export abstract class AssetManager {
     protected app: Application;
     protected _assets: any;
 
-    abstract add(data: any): any;
+    abstract add(data: any): pc.Asset;
 
     constructor(app: Application) {
         this.app = app;

@@ -35,7 +35,7 @@ export default class ModelManager extends AssetManager {
     }
 
     add(data: ModelData) {
-        if (this._assets[data.uid]) return this;
+        if (this._assets[data.uid]) return this._assets[data.uid];
 
         let assets: number[] = [];
         let texturesMap: ModelAssetsMap = {};
@@ -80,7 +80,7 @@ export default class ModelManager extends AssetManager {
         this._assets[data.uid] = modelAsset;
         this.app.$.assets.add(modelAsset);
 
-        return this;
+        return modelAsset;
     }
 
     load(identity: string, options: ModelLoadOptions = {}): Promise<pc.Asset> {

@@ -7,7 +7,7 @@ class OrbitCameraMouseInput extends ScriptType {
     static __attributes = {
         orbitSensitivity: { type: "number", default: 0.3, title: "Orbit Sensitivity", description: "How fast the camera moves around the orbit. Higher is faster" },
         distanceSensitivity: { type: "number", default: 0.15, title: "Distance Sensitivity", description: "How fast the camera moves in and out. Higher is faster" }
-    }
+    };
 
     static fromWorldPoint = new pc.Vec3();
     static toWorldPoint = new pc.Vec3();
