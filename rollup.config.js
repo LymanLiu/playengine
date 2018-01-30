@@ -49,7 +49,7 @@ function genConfig(name) {
     };
 
     if (name === 'dev') {
-        config.output.file = 'examples/dist/playengine.umd.js';
+        config.output.file = 'examples/libs/playengine.umd.js';
         config.plugins.push(serve({
             contentBase: 'examples/',
             port: 3333
