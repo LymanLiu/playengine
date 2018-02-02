@@ -4,6 +4,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import inject from 'rollup-plugin-inject';
 import serve from 'rollup-plugin-serve';
 import json from 'rollup-plugin-json';
+import livereload from 'rollup-plugin-livereload';
 
 const builds = {
     cjs: {
@@ -53,6 +54,9 @@ function genConfig(name) {
         config.plugins.push(serve({
             contentBase: 'examples/',
             port: 3333
+        }));
+        config.plugins.push(livereload({
+            watch: 'examples/'
         }));
     }
 
