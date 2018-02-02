@@ -1,7 +1,7 @@
 import { Application } from "../application";
 import { AssetManager, AssetData } from "./asset";
 
-interface AnimationData extends AssetData {
+export interface AnimationData extends AssetData {
     url: string;
 }
 
@@ -16,5 +16,4 @@ export default class AnimationManager extends AssetManager {
         this.app.$.assets.add(animationAsset);
         return animationAsset;
     }
-
 }

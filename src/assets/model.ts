@@ -2,13 +2,15 @@ import { Application } from "../application";
 import { AssetManager, AssetData } from "./asset";
 import { MaterialData } from "./material";
 import { TextureData } from "./texture";
+import { AnimationData } from "./animation";
 
 interface ModelMapping {
-    material: number
+    material: number;
 }
 
 interface ModelLoadOptions {
     onProgress?: (asset: pc.Asset, loadedCounts: number, totalCounts: number) => void;
+    loadAnimations?: boolean;
 }
 
 export interface ModelData extends AssetData {
@@ -16,6 +18,7 @@ export interface ModelData extends AssetData {
     mapping: string[];
     materials?: MaterialData[];
     textures?: TextureData[];
+    animations?: AnimationData[];
 }
 
 export interface ModelDataOptions {
@@ -26,7 +29,7 @@ export interface ModelDataOptions {
 }
 
 export interface ModelAssetsMap {
-    [identity: string]: number
+    [identity: string]: number;
 }
 
 export default class ModelManager extends AssetManager {
@@ -35,7 +38,9 @@ export default class ModelManager extends AssetManager {
     }
 
     add(data: ModelData) {
-        if (this._assets[data.uid]) return this._assets[data.uid];
+        if (this._assets[data.uid]) {
+            return this._assets[data.uid];
+        }
 
         let assets: number[] = [];
         let texturesMap: ModelAssetsMap = {};
@@ -43,7 +48,8 @@ export default class ModelManager extends AssetManager {
         let modelDataOptions: ModelDataOptions = {
             area: 0,
             mapping: [],
-            assets: []
+            assets: [],
+            animations: []
         };
 
         if (data.textures && data.textures.length > 0) {
@@ -70,6 +76,13 @@ export default class ModelManager extends AssetManager {
             modelDataOptions.mapping = data.mapping.map(name => ({ material: materialsMap[name] }));
         }
 
+        if (data.animations && data.animations.length > 0) {
+            data.animations.forEach(animationData => {
+                let animationAsset = this.app.animations.add(animationData);
+                modelDataOptions.animations.push(animationAsset.id);
+            });
+        }
+
         let modelAsset = new pc.Asset(
             data.name,
             pc.ASSET_MODEL,
@@ -88,6 +101,12 @@ export default class ModelManager extends AssetManager {
             let modelAsset = this._assets[identity];
             let loadedCounts = 0;
             let totalCounts = 1 + modelAsset.data.assets.length;
+            let modelAssets = modelAsset.data.assets;
+
+            if (options.loadAnimations) {
+                totalCounts += modelAsset.data.animations.length;
+                modelAssets = modelAssets.concat(modelAsset.data.animations);
+            }
 
             let onLoaded = (asset: pc.Asset) => {
                 loadedCounts++;
@@ -98,9 +117,9 @@ export default class ModelManager extends AssetManager {
                 if (loadedCounts === totalCounts) {
                     resolve(modelAsset);
                 }
-            }
+            };
 
-            modelAsset.data.assets.forEach((assetId: number) => {
+            modelAssets.forEach((assetId: number) => {
                 let asset = this.app.$.assets.get(assetId);
                 asset.ready(onLoaded);
                 asset.on("error", reject);
