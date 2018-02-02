@@ -103,6 +103,10 @@ export default class ModelManager extends AssetManager {
             let totalCounts = 1 + modelAsset.data.assets.length;
             let modelAssets = modelAsset.data.assets;
 
+            if (modelAsset.loaded) {
+                return resolve(modelAsset);
+            }
+
             if (options.loadAnimations) {
                 totalCounts += modelAsset.data.animations.length;
                 modelAssets = modelAssets.concat(modelAsset.data.animations);

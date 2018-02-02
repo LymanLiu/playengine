@@ -60,6 +60,10 @@ export default class CubemapManager extends AssetManager {
             let totalCounts = loadFaces ? 7 : 1;
             let cubemapAsset = this._assets[name];
 
+            if (cubemapAsset.loaded) {
+                return resolve(cubemapAsset);
+            }
+
             let onLoaded = () => {
                 loadedCounts++;
                 if (loadedCounts === totalCounts) {
