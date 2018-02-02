@@ -8,8 +8,8 @@ export class ScriptType implements pc.ScriptType {
     [prop: string]: any;
 
     name: string;
-    app: pc.Application;
-    entity: pc.Entity;
+    protected app: pc.Application;
+    protected entity: pc.Entity;
 
     __attributes: any;
     __scriptType: ScriptType;

@@ -2,13 +2,13 @@ import { TextureManager, CubemapManager, MaterialManager, ModelManager, Animatio
 import enhancePlayCanvas from "./enhance";
 
 export interface ApplicationOptions {
-    keyboard?: any,
-    mouse?: any,
-    touch?: any,
-    gamepads?: any,
-    scriptPrefix?: string,
-    assetPrefix?: string,
-    graphicsDeviceOptions?: Object
+    keyboard?: any;
+    mouse?: any;
+    touch?: any;
+    gamepads?: any;
+    scriptPrefix?: string;
+    assetPrefix?: string;
+    graphicsDeviceOptions?: object;
 }
 
 export class Application {
