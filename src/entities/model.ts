@@ -5,7 +5,20 @@ export interface ModelOptions extends EntityOptions {
     uid?: string;
     type?: string;
     asset?: number | pc.Asset;
-    animations?: number[] | boolean;
+    animations?: ModelAnimationOptions;
+}
+
+enum AnimationCycleMode {
+    NONE = "none",
+    ONE = "one",
+    ALL = "all"
+}
+
+interface ModelAnimationOptions {
+    assets?: number[];
+    activate?: boolean;
+    cycleMode?: AnimationCycleMode;
+    speed: number;
 }
 
 interface ModelAnimation {
@@ -15,16 +28,12 @@ interface ModelAnimation {
 }
 
 export class Model extends Entity {
-    uid: string;
-    aabb: any;
+
+    private _cycleMode: AnimationCycleMode;
 
     constructor(args: ModelOptions = {}) {
         super(args);
         this.entity.addComponent("model", { type: "asset" });
-
-        if (args.uid) {
-            this.uid = args.uid;
-        }
 
         if (args.type) {
             this.entity.model.type = args.type;
@@ -35,11 +44,21 @@ export class Model extends Entity {
         }
 
         if (args.animations) {
-            this.entity.addComponent("animation");
 
-            if (Array.isArray(args.animations)) {
-                this.entity.animation.assets = args.animations;
+            if (!this.entity.script) {
+                this.entity.addComponent("script");
             }
+
+            this.entity.script.create("animationController");
+
+            this.entity.addComponent("animation", {
+                activate: args.animations.activate || false,
+                assets: Array.isArray(args.animations.assets) ? args.animations.assets : [],
+                loop: false,
+                speed: args.animations.speed || 1
+            });
+
+            this.cycleMode = args.animations.cycleMode || AnimationCycleMode.NONE;
         }
     }
 
@@ -84,12 +103,67 @@ export class Model extends Entity {
             let name = animationsIndex[assetId];
             let animation = animations[name];
             results.push({
-                name: name,
+                animation,
                 asset: assetId,
-                animation: animation
+                name,
             });
         });
 
         return results;
+    }
+
+    get cycleMode() {
+        return this._cycleMode;
+    }
+
+    set cycleMode(value: AnimationCycleMode) {
+        switch (this.cycleMode) {
+            case AnimationCycleMode.NONE:
+                this.entity.animation.play(this.entity.animation.currAnim);
+                break;
+            case AnimationCycleMode.ONE:
+                this.entity.animation.off("end", this.onCycleOne);
+                break;
+            case AnimationCycleMode.ALL:
+                this.entity.animation.off("end", this.onCycleAll);
+                break;
+        }
+
+        switch (value) {
+            case AnimationCycleMode.ONE:
+                this.entity.animation.on("end", this.onCycleOne, this);
+                break;
+            case AnimationCycleMode.ALL:
+                this.entity.animation.on("end", this.onCycleAll, this);
+                break;
+        }
+
+        this._cycleMode = value;
+    }
+
+    private onCycleOne(currAnim: string) {
+        this.entity.animation.play(currAnim);
+    }
+
+    private onCycleAll(currAnim: string) {
+        let nextAnim = null;
+        const animations = this.animations;
+
+        if (animations.length === 1) {
+            nextAnim = currAnim;
+        } else {
+            for (let i = 0; i < animations.length; i++) {
+                let animation = animations[i];
+                if (animation.name === currAnim) {
+                    if (i === animations.length - 1) {
+                        nextAnim = animations[0].name;
+                    } else {
+                        nextAnim = animations[i + 1].name;
+                    }
+                }
+            }
+        }
+
+        this.entity.animation.play(nextAnim);
     }
 }
