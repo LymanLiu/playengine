@@ -2,21 +2,31 @@ import { createScript, ScriptType } from "./script";
 import { OrbitCamera } from "./orbitCamera";
 
 class OrbitCameraMouseInput extends ScriptType {
-    static __name = "orbitCameraMouseInput";
+    public static __name = "orbitCameraMouseInput";
 
-    static __attributes = {
-        orbitSensitivity: { type: "number", default: 0.3, title: "Orbit Sensitivity", description: "How fast the camera moves around the orbit. Higher is faster" },
-        distanceSensitivity: { type: "number", default: 0.15, title: "Distance Sensitivity", description: "How fast the camera moves in and out. Higher is faster" }
+    public static __attributes = {
+        orbitSensitivity: {
+            type: "number",
+            default: 0.3,
+            title: "Orbit Sensitivity",
+            description: "How fast the camera moves around the orbit. Higher is faster"
+        },
+        distanceSensitivity: {
+            type: "number",
+            default: 0.15,
+            title: "Distance Sensitivity",
+            description: "How fast the camera moves in and out. Higher is faster"
+        }
     };
 
-    static fromWorldPoint = new pc.Vec3();
-    static toWorldPoint = new pc.Vec3();
-    static worldDiff = new pc.Vec3();
+    public static fromWorldPoint = new pc.Vec3();
+    public static toWorldPoint = new pc.Vec3();
+    public static worldDiff = new pc.Vec3();
 
     private orbitCamera: OrbitCamera;
     private onMouseOut: () => void;
 
-    initialize() {
+    public initialize() {
         this.orbitCamera = this.entity.script.orbitCamera;
 
         if (this.orbitCamera) {
@@ -35,7 +45,7 @@ class OrbitCameraMouseInput extends ScriptType {
         this.onMouseOut = this._onMouseOut.bind(this);
     }
 
-    onEnable() {
+    private onEnable() {
         this.lookButtonDown = false;
         this.panButtonDown = false;
 
@@ -45,9 +55,9 @@ class OrbitCameraMouseInput extends ScriptType {
         this.app.mouse.on(pc.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
 
         window.addEventListener("mouseout", this.onMouseOut, false);
-    };
+    }
 
-    onDisable() {
+    private onDisable() {
         this.lookButtonDown = false;
         this.panButtonDown = false;
 
@@ -57,17 +67,17 @@ class OrbitCameraMouseInput extends ScriptType {
         this.app.mouse.off(pc.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
 
         window.removeEventListener("mouseout", this.onMouseOut, false);
-    };
+    }
 
     private pan(screenPoint: pc.MouseEvent) {
-        var fromWorldPoint = OrbitCameraMouseInput.fromWorldPoint;
-        var toWorldPoint = OrbitCameraMouseInput.toWorldPoint;
-        var worldDiff = OrbitCameraMouseInput.worldDiff;
+        let fromWorldPoint = OrbitCameraMouseInput.fromWorldPoint;
+        let toWorldPoint = OrbitCameraMouseInput.toWorldPoint;
+        let worldDiff = OrbitCameraMouseInput.worldDiff;
 
         // For panning to work at any zoom level, we use screen point to world projection
         // to work out how far we need to pan the pivotEntity in world space
-        var camera = this.entity.camera;
-        var distance = this.orbitCamera.distance;
+        let camera = this.entity.camera;
+        let distance = this.orbitCamera.distance;
 
         camera.screenToWorld(screenPoint.x, screenPoint.y, distance, fromWorldPoint);
         camera.screenToWorld(this.lastPoint.x, this.lastPoint.y, distance, toWorldPoint);
@@ -81,34 +91,33 @@ class OrbitCameraMouseInput extends ScriptType {
         event.event.preventDefault();
         event.event.stopPropagation();
         switch (event.button) {
-            case pc.MOUSEBUTTON_LEFT: {
+            case pc.MOUSEBUTTON_LEFT:
                 this.lookButtonDown = true;
-            } break;
+                break;
 
             case pc.MOUSEBUTTON_MIDDLE:
-            case pc.MOUSEBUTTON_RIGHT: {
+            case pc.MOUSEBUTTON_RIGHT:
                 this.panButtonDown = true;
-            } break;
+                break;
         }
     }
 
     private onMouseUp(event: pc.MouseEvent) {
         event.event.preventDefault();
         event.event.stopPropagation();
-        var self = this;
         switch (event.button) {
-            case pc.MOUSEBUTTON_LEFT: {
+            case pc.MOUSEBUTTON_LEFT:
                 this.lookButtonDown = false;
-            } break;
+                break;
 
             case pc.MOUSEBUTTON_MIDDLE:
-            case pc.MOUSEBUTTON_RIGHT: {
+            case pc.MOUSEBUTTON_RIGHT:
                 this.panButtonDown = false;
-            } break;
+                break;
         }
 
-        setTimeout(function() {
-            self.app.fire("app:camera:moveend");
+        setTimeout(() => {
+            this.app.fire("app:camera:moveend");
         }, 250);
     }
 

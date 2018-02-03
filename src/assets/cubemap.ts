@@ -28,9 +28,9 @@ export default class CubemapManager extends AssetManager {
         super(app);
     }
 
-    add(data: CubemapData) {
+    public add(data: CubemapData) {
         let textureAssetIds: number[] = [];
-        data.textures.forEach(textureData => {
+        data.textures.forEach((textureData: TextureData) => {
             let textureAsset = this.app.textures.add(textureData);
             textureAssetIds.push(textureAsset.id);
         });
@@ -53,7 +53,7 @@ export default class CubemapManager extends AssetManager {
         return cubemapAsset;
     }
 
-    load(name: string, options: CubemapLoadOptions = {}): Promise<pc.Asset> {
+    public load(name: string, options: CubemapLoadOptions = {}): Promise<pc.Asset> {
         return new Promise((resolve, reject) => {
             let loadFaces = typeof options.loadFaces === "boolean" ? options.loadFaces : false;
             let loadedCounts = 0;
@@ -69,7 +69,7 @@ export default class CubemapManager extends AssetManager {
                 if (loadedCounts === totalCounts) {
                     resolve(cubemapAsset);
                 }
-            }
+            };
 
             if (loadFaces) {
                 cubemapAsset.data.textures.forEach((textureAssetId: number) => {

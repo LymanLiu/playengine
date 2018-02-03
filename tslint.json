@@ -5,6 +5,18 @@
   ],
   "jsRules": null,
   "rules": {
+    "interface-name": false,
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "member-ordering": false,
+    "trailing-comma": false,
+    "prefer-const": false,
+    "no-console": false,
+    "variable-name": [
+      true,
+      "allow-leading-underscore",
+      "allow-pascal-case"
+    ],
     "quotemark": [
       true,
       "double",

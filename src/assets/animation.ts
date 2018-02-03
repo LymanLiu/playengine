@@ -10,7 +10,7 @@ export default class AnimationManager extends AssetManager {
         super(app);
     }
 
-    add(data: AnimationData) {
+    public add(data: AnimationData) {
         let animationAsset = new pc.Asset(data.name, pc.ASSET_ANIMATION, { url: data.url });
         this._assets[animationAsset.id] = animationAsset;
         this.app.$.assets.add(animationAsset);

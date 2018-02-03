@@ -9,7 +9,7 @@ export default class MaterialManager extends AssetManager {
         super(app);
     }
 
-    add(data: MaterialData) {
+    public add(data: MaterialData) {
         if (!data.shader) {
             data.shader = "blinn";
         }
@@ -22,7 +22,7 @@ export default class MaterialManager extends AssetManager {
         return materialAsset;
     }
 
-    link(materialData: MaterialData, texturesMap: ModelAssetsMap) {
+    public link(materialData: MaterialData, texturesMap: ModelAssetsMap) {
         MATERIAL_TEXTURE_FIELDS.forEach((field: string) => {
             if (typeof materialData[field] === "string") {
                 materialData[field] = texturesMap[materialData[field]];
@@ -46,5 +46,4 @@ export interface MaterialData extends AssetData {
     cubeMap?: string;
 
     [prop: string]: any;
-};
-
+}

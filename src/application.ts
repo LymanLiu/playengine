@@ -13,15 +13,15 @@ export interface ApplicationOptions {
 }
 
 export class Application {
-    $: pc.Application;
-    textures: TextureManager;
-    cubemaps: CubemapManager;
-    materials: MaterialManager;
-    models: ModelManager;
-    animations: AnimationManager;
+    public $: pc.Application;
+    public textures: TextureManager;
+    public cubemaps: CubemapManager;
+    public materials: MaterialManager;
+    public models: ModelManager;
+    public animations: AnimationManager;
 
-    isEnhanced = false;
-    isAutoResized = false;
+    public isEnhanced = false;
+    public isAutoResized = false;
 
     private onResize: (event?: any) => void;
 
@@ -42,17 +42,17 @@ export class Application {
         this.onResize = this._onResize.bind(this);
     }
 
-    enhance() {
+    public enhance() {
         enhancePlayCanvas();
-        new AnimationController(this);
+        AnimationController(this);
         this.isEnhanced = true;
 
         return this;
     }
 
-    autoResize() {
-        window.addEventListener('resize', this.onResize, false);
-        window.addEventListener('orientationchange', this.onResize, false);
+    public autoResize() {
+        window.addEventListener("resize", this.onResize, false);
+        window.addEventListener("orientationchange", this.onResize, false);
         this.isAutoResized = true;
 
         return this;

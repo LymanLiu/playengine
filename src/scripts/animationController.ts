@@ -3,19 +3,21 @@ import { createScript, ScriptType } from "./script";
 class AnimationController extends ScriptType {
     public static __name = "animationController";
 
-    initialize() {
+    public initialize() {
         this.lastState = {
             playing: this.entity.animation.playing,
             anim: this.entity.animation.currAnim
         };
     }
 
-    update() {
-        var animation = this.entity.animation;
-        var currPlaying = animation.playing;
-        var lastPlaying = this.lastState.playing;
+    public update() {
+        let animation = this.entity.animation;
+        let currPlaying = animation.playing;
+        let lastPlaying = this.lastState.playing;
 
-        if (lastPlaying === currPlaying) return;
+        if (lastPlaying === currPlaying) {
+            return;
+        }
 
         this.lastState.playing = animation.playing;
         this.lastState.anim = animation.currAnim;

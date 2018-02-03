@@ -9,18 +9,18 @@ export abstract class AssetManager {
     protected app: Application;
     protected _assets: any;
 
-    abstract add(data: any): pc.Asset;
-
     constructor(app: Application) {
         this.app = app;
         this._assets = {};
     }
 
-    get(identity: string | number): pc.Asset {
+    public abstract add(data: any): pc.Asset;
+
+    public get(identity: string | number): pc.Asset {
         return this._assets[identity] || null;
     }
 
-    load(identity: number | string): Promise<pc.Asset> {
+    public load(identity: number | string): Promise<pc.Asset> {
         return new Promise((resolve, reject) => {
             let asset = this._assets[identity];
 

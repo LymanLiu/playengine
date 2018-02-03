@@ -22,7 +22,7 @@ export default class TextureManager extends AssetManager {
         super(app);
     }
 
-    add(data: TextureData) {
+    public add(data: TextureData) {
         let textureAsset = new pc.Asset(
             data.name,
             pc.ASSET_TEXTURE,
@@ -43,7 +43,7 @@ export default class TextureManager extends AssetManager {
         return textureAsset;
     }
 
-    remove(identity: number) {
+    public remove(identity: number) {
         this.app.$.assets.remove(this._assets[identity]);
         delete this._assets[identity];
         return this;

@@ -7,8 +7,8 @@ export interface EntityOptions {
 }
 
 export class Entity {
-    uid: string;
-    entity: pc.Entity;
+    public uid: string;
+    public entity: pc.Entity;
 
     constructor(args: EntityOptions = {}) {
         this.entity = new pc.Entity();

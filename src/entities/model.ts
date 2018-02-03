@@ -105,7 +105,7 @@ export class Model extends Entity {
             results.push({
                 animation,
                 asset: assetId,
-                name,
+                name
             });
         });
 
@@ -117,24 +117,25 @@ export class Model extends Entity {
     }
 
     set cycleMode(value: AnimationCycleMode) {
+        let animation = this.entity.animation;
         switch (this.cycleMode) {
             case AnimationCycleMode.NONE:
-                this.entity.animation.play(this.entity.animation.currAnim);
+                animation.play(animation.currAnim);
                 break;
             case AnimationCycleMode.ONE:
-                this.entity.animation.off("end", this.onCycleOne);
+                animation.off("end", this.onCycleOne);
                 break;
             case AnimationCycleMode.ALL:
-                this.entity.animation.off("end", this.onCycleAll);
+                animation.off("end", this.onCycleAll);
                 break;
         }
 
         switch (value) {
             case AnimationCycleMode.ONE:
-                this.entity.animation.on("end", this.onCycleOne, this);
+                animation.on("end", this.onCycleOne, this);
                 break;
             case AnimationCycleMode.ALL:
-                this.entity.animation.on("end", this.onCycleAll, this);
+                animation.on("end", this.onCycleAll, this);
                 break;
         }
 
