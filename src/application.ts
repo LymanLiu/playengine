@@ -1,4 +1,5 @@
 import { TextureManager, CubemapManager, MaterialManager, ModelManager, AnimationManager } from "./assets";
+import AnimationController from "./scripts/animationController";
 import enhancePlayCanvas from "./enhance";
 
 export interface ApplicationOptions {
@@ -43,6 +44,7 @@ export class Application {
 
     enhance() {
         enhancePlayCanvas();
+        new AnimationController(this);
         this.isEnhanced = true;
 
         return this;
@@ -57,8 +59,7 @@ export class Application {
     }
 
     private _onResize() {
-        let canvas = this.$.graphicsDevice.canvas;
+        const canvas = this.$.graphicsDevice.canvas;
         this.$.resizeCanvas(canvas.width, canvas.height);
     }
 }
-
