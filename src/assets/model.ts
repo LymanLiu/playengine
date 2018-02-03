@@ -24,7 +24,6 @@ export interface ModelData extends AssetData {
 export interface ModelDataOptions {
     area: number;
     mapping: ModelMapping[];
-    assets: number[];
     [key: string]: any;
 }
 
@@ -37,47 +36,47 @@ export default class ModelManager extends AssetManager {
         super(app);
     }
 
-    add(data: ModelData) {
+    public add(data: ModelData) {
         if (this._assets[data.uid]) {
             return this._assets[data.uid];
         }
 
-        let assets: number[] = [];
         let texturesMap: ModelAssetsMap = {};
         let materialsMap: ModelAssetsMap = {};
         let modelDataOptions: ModelDataOptions = {
             area: 0,
             mapping: [],
-            assets: [],
+            materials: [],
+            textures: [],
             animations: []
         };
 
         if (data.textures && data.textures.length > 0) {
-            data.textures.forEach(textureData => {
+            data.textures.forEach((textureData: TextureData) => {
                 let textureAsset = this.app.textures.add(textureData);
                 texturesMap[textureData.name] = textureAsset.id;
-                modelDataOptions.assets.push(textureAsset.id);
-                assets.push(textureAsset.id);
+                modelDataOptions.textures.push(textureAsset.id);
             });
         }
 
         if (data.materials && data.materials.length > 0) {
-            data.materials.forEach(materialData => {
-                if (materialsMap[materialData.name]) return;
+            data.materials.forEach((materialData: MaterialData) => {
+                if (materialsMap[materialData.name]) {
+                    return;
+                }
 
                 this.app.materials.link(materialData, texturesMap);
 
                 let materialAsset = this.app.materials.add(materialData);
                 materialsMap[materialData.name] = materialAsset.id;
-                modelDataOptions.assets.push(materialAsset.id);
-                assets.push(materialAsset.id);
+                modelDataOptions.materials.push(materialAsset.id);
             });
 
-            modelDataOptions.mapping = data.mapping.map(name => ({ material: materialsMap[name] }));
+            modelDataOptions.mapping = data.mapping.map((name: string) => ({ material: materialsMap[name] }));
         }
 
         if (data.animations && data.animations.length > 0) {
-            data.animations.forEach(animationData => {
+            data.animations.forEach((animationData: AnimationData) => {
                 let animationAsset = this.app.animations.add(animationData);
                 modelDataOptions.animations.push(animationAsset.id);
             });
@@ -96,12 +95,12 @@ export default class ModelManager extends AssetManager {
         return modelAsset;
     }
 
-    load(identity: string, options: ModelLoadOptions = {}): Promise<pc.Asset> {
+    public load(identity: string, options: ModelLoadOptions = {}): Promise<pc.Asset> {
         return new Promise((resolve, reject) => {
             let modelAsset = this._assets[identity];
             let loadedCounts = 0;
-            let totalCounts = 1 + modelAsset.data.assets.length;
-            let modelAssets = modelAsset.data.assets;
+            let totalCounts = 1 + modelAsset.data.materials.length + modelAsset.data.textures.length;
+            let modelAssets = modelAsset.data.materials.concat(modelAsset.data.textures);
 
             if (modelAsset.loaded) {
                 return resolve(modelAsset);
