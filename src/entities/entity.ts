@@ -1,4 +1,5 @@
 export interface EntityOptions {
+    uid?: string;
     name?: string;
     position?: number[];
     rotation?: number[];
@@ -6,10 +7,15 @@ export interface EntityOptions {
 }
 
 export class Entity {
-    entity : any;
+    uid: string;
+    entity: pc.Entity;
 
-    constructor(args : EntityOptions = {}) {
+    constructor(args: EntityOptions = {}) {
         this.entity = new pc.Entity();
+
+        if (args.uid) {
+            this.uid = args.uid;
+        }
 
         if (args.name) {
             this.entity.name = args.name;
