@@ -1,3 +1,5 @@
+import { ENTITY_BASE } from "../constants";
+
 export interface EntityOptions {
     uid?: string;
     name?: string;
@@ -9,9 +11,11 @@ export interface EntityOptions {
 export class Entity {
     public uid: string;
     public entity: pc.Entity;
+    protected type: string;
 
     constructor(args: EntityOptions = {}) {
         this.entity = new pc.Entity();
+        this.type = ENTITY_BASE;
 
         if (args.uid) {
             this.uid = args.uid;
@@ -32,5 +36,12 @@ export class Entity {
         if (args.scale) {
             this.entity.setLocalScale(...args.scale);
         }
+
+        this.entity._app.fire("app:entity:create", this);
+    }
+
+    public destroy() {
+        this.entity._app.fire("app:entity:create", this.entity.getGuid());
+        this.entity.destroy();
     }
 }

@@ -1,5 +1,5 @@
 import { Entity, EntityOptions } from "./entity";
-import { MATERIAL_TEXTURE_FIELDS } from "../constants";
+import { ENTITY_MODEL, MATERIAL_TEXTURE_FIELDS } from "../constants";
 
 export interface ModelOptions extends EntityOptions {
     uid?: string;
@@ -33,6 +33,7 @@ export class Model extends Entity {
 
     constructor(args: ModelOptions = {}) {
         super(args);
+        this.type = ENTITY_MODEL;
         this.entity.addComponent("model", { type: "asset" });
 
         if (args.type) {
