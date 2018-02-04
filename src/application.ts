@@ -1,5 +1,6 @@
 import { TextureManager, CubemapManager, MaterialManager, ModelManager, AnimationManager } from "./assets";
 import AnimationController from "./scripts/animationController";
+import Selection from "./selection";
 import enhancePlayCanvas from "./enhance";
 
 export interface ApplicationOptions {
@@ -19,6 +20,7 @@ export class Application {
     public materials: MaterialManager;
     public models: ModelManager;
     public animations: AnimationManager;
+    public selection: Selection;
 
     public isEnhanced = false;
     public isAutoResized = false;
@@ -38,6 +40,7 @@ export class Application {
         this.materials = new MaterialManager(this);
         this.models = new ModelManager(this);
         this.animations = new AnimationManager(this);
+        this.selection = new Selection(this);
 
         this.onResize = this._onResize.bind(this);
     }
