@@ -29,11 +29,13 @@ interface ModelAnimation {
 
 export class Model extends Entity {
 
+    private _aabb: pc.BoundingBox;
     private _cycleMode: AnimationCycleMode;
 
     constructor(args: ModelOptions = {}) {
         super(args);
         this.type = ENTITY_MODEL;
+        this._aabb = new pc.BoundingBox();
         this.entity.addComponent("model", { type: "asset" });
 
         if (args.type) {
@@ -63,8 +65,28 @@ export class Model extends Entity {
         }
     }
 
-    get model() {
+    public get model() {
         return this.entity.model.model;
+    }
+
+    get hasModel() {
+        return !!this.model;
+    }
+
+    get aabb() {
+        let model = this.model;
+
+        if (!model) {
+            return null;
+        }
+
+        this._aabb.copy(model.meshInstances[0].aabb);
+
+        for (let i = 1; i < model.meshInstances.length; i++) {
+            this._aabb.add(model.meshInstances[i].aabb);
+        }
+
+        return this._aabb;
     }
 
     get mapping() {

@@ -11,7 +11,7 @@ export interface EntityOptions {
 export class Entity {
     public uid: string;
     public entity: pc.Entity;
-    protected type: string;
+    public type: string;
 
     constructor(args: EntityOptions = {}) {
         this.entity = new pc.Entity();
