@@ -1,5 +1,6 @@
 import { TextureManager, CubemapManager, MaterialManager, ModelManager, AnimationManager } from "./assets";
 import AnimationController from "./scripts/animationController";
+import EntityManager from "./entities/entities";
 import Selection from "./selection";
 import enhancePlayCanvas from "./enhance";
 
@@ -15,6 +16,7 @@ export interface ApplicationOptions {
 
 export class Application {
     public $: pc.Application;
+    public entities: EntityManager;
     public textures: TextureManager;
     public cubemaps: CubemapManager;
     public materials: MaterialManager;
@@ -35,6 +37,7 @@ export class Application {
         this.$.loader.getHandler(pc.ASSET_TEXTURE).crossOrigin = true;
         this.$.start();
 
+        this.entities = new EntityManager(this);
         this.textures = new TextureManager(this);
         this.cubemaps = new CubemapManager(this);
         this.materials = new MaterialManager(this);
