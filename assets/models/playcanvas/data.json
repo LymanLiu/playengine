@@ -1,6 +1,6 @@
 {
   "uid": "4ae5a885-992b-40a7-a64c-1ee7b2d854d9",
-  "url": "./assets/models/playcanvas/playcanvas.json",
+  "url": "../assets/models/playcanvas/playcanvas.json",
   "mapping": [
     "metal-silver",
     "plastic-orange"
@@ -8,23 +8,23 @@
   "textures": [
     {
       "name": "plastic_ao.jpg",
-      "url": "./assets/models/playcanvas/plastic_ao.jpg"
+      "url": "../assets/models/playcanvas/plastic_ao.jpg"
     },
     {
       "name": "metal_ao.jpg",
-      "url": "./assets/models/playcanvas/metal_ao.jpg"
+      "url": "../assets/models/playcanvas/metal_ao.jpg"
     },
     {
       "name": "metal_gloss.png",
-      "url": "./assets/models/playcanvas/metal_gloss.png"
+      "url": "../assets/models/playcanvas/metal_gloss.png"
     },
     {
       "name": "plastic_gloss.png",
-      "url": "./assets/models/playcanvas/plastic_gloss.png"
+      "url": "../assets/models/playcanvas/plastic_gloss.png"
     },
     {
       "name": "plastic_normals.png",
-      "url": "./assets/models/playcanvas/plastic_normals.png"
+      "url": "../assets/models/playcanvas/plastic_normals.png"
     }
   ],
   "materials": [
