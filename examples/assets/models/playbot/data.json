@@ -1,0 +1,225 @@
+{
+  "uid": "4ae5a885-992b-40a7-a64c-1ee7b2d854d0",
+  "name": "Playbot",
+  "url": "../assets/models/playbot/Playbot.json",
+  "mapping": [
+    "playbot_head",
+    "playbot_body",
+    "playbot_arm",
+    "playbot_leg"
+  ],
+  "textures": [
+    {
+      "name": "arm_E.png",
+      "url": "../assets/models/playbot/arm_E.png"
+    },
+    {
+      "name": "arm_N_clean.png",
+      "url": "../assets/models/playbot/arm_N_clean.png"
+    },
+    {
+      "name": "arm_clean.png",
+      "url": "../assets/models/playbot/arm_clean.png"
+    },
+    {
+      "name": "body_E.png",
+      "url": "../assets/models/playbot/body_E.png"
+    },
+    {
+      "name": "body_N_clean.png",
+      "url": "../assets/models/playbot/body_N_clean.png"
+    },
+    {
+      "name": "body_clean.png",
+      "url": "../assets/models/playbot/body_clean.png"
+    },
+    {
+      "name": "head_E.png",
+      "url": "../assets/models/playbot/head_E.png"
+    },
+    {
+      "name": "head_N_clean.png",
+      "url": "../assets/models/playbot/head_N_clean.png"
+    },
+    {
+      "name": "head_clean.png",
+      "url": "../assets/models/playbot/head_clean.png"
+    },
+    {
+      "name": "leg_E.png",
+      "url": "../assets/models/playbot/leg_E.png"
+    },
+    {
+      "name": "leg_N_clean.png",
+      "url": "../assets/models/playbot/leg_N_clean.png"
+    },
+    {
+      "name": "leg_clean.png",
+      "url": "../assets/models/playbot/leg_clean.png"
+    },
+    {
+      "name": "env_01.png",
+      "url": "../assets/models/playbot/env_01.png"
+    }
+  ],
+  "materials": [
+    {
+      "name": "playbot_head",
+      "ambient": [
+        0.588,
+        0.588,
+        0.588
+      ],
+      "blendType": 3,
+      "bumpMapFactor": 0.3,
+      "cubeMapProjectionBox": {
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "diffuseMap": "head_clean.png",
+      "emissiveMap": "head_E.png",
+      "normalMap": "head_N_clean.png",
+      "opacity": 1,
+      "reflectivity": 0.2,
+      "shader": "phong",
+      "shininess": 1024,
+      "specular": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "sphereMap": "env_01.png"
+    },
+    {
+      "name": "playbot_body",
+      "ambient": [
+        0.588,
+        0.588,
+        0.588
+      ],
+      "blendType": 3,
+      "bumpMapFactor": 0.3,
+      "cubeMapProjectionBox": {
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "diffuseMap": "body_clean.png",
+      "emissiveMap": "body_E.png",
+      "normalMap": "body_N_clean.png",
+      "opacity": 1,
+      "reflectivity": 0.2,
+      "shader": "phong",
+      "shininess": 1024,
+      "specular": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "sphereMap": "env_01.png"
+    },
+    {
+      "name": "playbot_arm",
+      "ambient": [
+        0.588,
+        0.588,
+        0.588
+      ],
+      "blendType": 3,
+      "bumpMapFactor": 0.3,
+      "cubeMapProjectionBox": {
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "diffuseMap": "arm_clean.png",
+      "emissiveMap": "arm_E.png",
+      "normalMap": "arm_N_clean.png",
+      "opacity": 1,
+      "reflectivity": 0.2,
+      "shader": "phong",
+      "shininess": 1024,
+      "specular": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "sphereMap": "env_01.png"
+    },
+    {
+      "name": "playbot_leg",
+      "ambient": [
+        0.588,
+        0.588,
+        0.588
+      ],
+      "blendType": 3,
+      "bumpMapFactor": 0.3,
+      "cubeMapProjectionBox": {
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "halfExtents": [
+          0.5,
+          0.5,
+          0.5
+        ]
+      },
+      "diffuseMap": "leg_clean.png",
+      "emissiveMap": "leg_E.png",
+      "normalMap": "leg_N_clean.png",
+      "opacity": 1,
+      "reflectivity": 0.2,
+      "shader": "phong",
+      "shininess": 1024,
+      "specular": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "sphereMap": "env_01.png"
+    }
+  ],
+  "animations": [
+    {
+      "name": "Playbot_die_animation",
+      "url": "../assets/models/playbot/Playbot_die_animation.json"
+    },
+    {
+      "name": "Playbot_idle_animation",
+      "url": "../assets/models/playbot/Playbot_idle_animation.json"
+    },
+    {
+      "name": "Playbot_jump_animation",
+      "url": "../assets/models/playbot/Playbot_jump_animation.json"
+    },
+    {
+      "name": "Playbot_run_animation",
+      "url": "../assets/models/playbot/Playbot_run_animation.json"
+    }
+  ]
+}
