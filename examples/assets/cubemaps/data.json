@@ -1,30 +1,30 @@
 {
   "name": "Helipad",
-  "cubemap": "./assets/cubemaps/Helipad.dds",
+  "cubemap": "../assets/cubemaps/Helipad.dds",
   "textures": [
     {
       "name": "Helipad_posx.png",
-      "url": "./assets/cubemaps/Helipad_posx.png"
+      "url": "../assets/cubemaps/Helipad_posx.png"
     },
     {
       "name": "Helipad_negx.png",
-      "url": "./assets/cubemaps/Helipad_negx.png"
+      "url": "../assets/cubemaps/Helipad_negx.png"
     },
     {
       "name": "Helipad_posy.png",
-      "url": "./assets/cubemaps/Helipad_posy.png"
+      "url": "../assets/cubemaps/Helipad_posy.png"
     },
     {
       "name": "Helipad_negy.png",
-      "url": "./assets/cubemaps/Helipad_negy.png"
+      "url": "../assets/cubemaps/Helipad_negy.png"
     },
     {
       "name": "Helipad_posz.png",
-      "url": "./assets/cubemaps/Helipad_posz.png"
+      "url": "../assets/cubemaps/Helipad_posz.png"
     },
     {
       "name": "Helipad_negz.png",
-      "url": "./assets/cubemaps/Helipad_negz.png"
+      "url": "../assets/cubemaps/Helipad_negz.png"
     }
   ]
 }
