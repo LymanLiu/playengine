@@ -5,10 +5,10 @@ import Selection from "./selection";
 import enhancePlayCanvas from "./enhance";
 
 export interface ApplicationOptions {
-    keyboard?: any;
-    mouse?: any;
-    touch?: any;
-    gamepads?: any;
+    keyboard?: pc.Keyboard;
+    mouse?: pc.Mouse;
+    touch?: pc.TouchDevice;
+    gamepads?: pc.GamePads;
     scriptPrefix?: string;
     assetPrefix?: string;
     graphicsDeviceOptions?: object;
