@@ -178,6 +178,7 @@ var constants = {
     MATERIAL_TEXTURE_FIELDS: MATERIAL_TEXTURE_FIELDS,
     MATERIAL_TEXTURE_FIELDS2: MATERIAL_TEXTURE_FIELDS2
 };
+//# sourceMappingURL=constants.js.map
 
 var MaterialManager = /** @class */ (function (_super) {
     __extends(MaterialManager, _super);
@@ -629,6 +630,7 @@ var AnimationController = /** @class */ (function (_super) {
     return AnimationController;
 }(ScriptType));
 var AnimationController$1 = createScript(AnimationController);
+//# sourceMappingURL=animationController.js.map
 
 var EntityManager = /** @class */ (function () {
     function EntityManager(app) {
@@ -919,18 +921,23 @@ var Selection = /** @class */ (function () {
         this.camera = null;
         return this;
     };
-    Selection.prototype.select = function (x, y) {
-        this.checkCamera();
-        var result = null;
+    Selection.prototype.prepareRay = function (x, y) {
         var camera = this.camera.entity.camera;
         var fromPoint = this.fromPoint;
         var toPoint = this.toPoint;
         var ray = this.worldRay;
-        var entities = this.app.entities.list();
         camera.screenToWorld(x, y, camera.nearClip, fromPoint);
         camera.screenToWorld(x, y, camera.farClip, toPoint);
         ray.origin.copy(fromPoint);
         ray.direction.copy(toPoint).sub(ray.origin).normalize();
+        return ray;
+    };
+    Selection.prototype.select = function (x, y) {
+        this.checkCamera();
+        this.prepareRay(x, y);
+        var result = null;
+        var ray = this.worldRay;
+        var entities = this.app.entities.list();
         for (var _i = 0, entities_1 = entities; _i < entities_1.length; _i++) {
             var entity = entities_1[_i];
             if (entity instanceof Model && entity.aabb.intersectsRay(ray)) {
@@ -952,6 +959,42 @@ var Selection = /** @class */ (function () {
 }());
 
 function enhance() {
+    function compare(a, b) {
+        return b.priority - a.priority;
+    }
+    pc.events.on = function (name, callback, scope, priority) {
+        if (!name || typeof (name) !== "string" || !callback) {
+            return this;
+        }
+        if (!this._callbacks) {
+            this._callbacks = {};
+        }
+        if (!this._callbacks[name]) {
+            this._callbacks[name] = [];
+        }
+        if (!this._callbackActive) {
+            this._callbackActive = {};
+        }
+        if (this._callbackActive[name] && this._callbackActive[name] === this._callbacks[name]) {
+            this._callbackActive[name] = this._callbackActive[name].slice();
+        }
+        this._callbacks[name].push({
+            callback: callback,
+            scope: scope || this,
+            priority: priority || 0
+        });
+        this._callbacks[name].sort(compare);
+        return this;
+    };
+    pc.events.once = function (name, callback, scope, priority) {
+        callback.once = true;
+        this.on(name, callback, scope, priority);
+        return this;
+    };
+}
+//# sourceMappingURL=events.js.map
+
+function enhance$1() {
     pc.Ray.prototype.intersectTriangle = (function () {
         var diff = new pc.Vec3();
         var edge1 = new pc.Vec3();
@@ -996,9 +1039,23 @@ function enhance() {
             return res.copy(this.direction).scale(QdN / DdN).add(this.origin);
         };
     })();
+    pc.Ray.prototype.intersectMeshInstances = function (meshInstances) {
+        var i = 0;
+        var intersects = [];
+        for (i = 0; i < meshInstances.length; i++) {
+            meshInstances[i].intersectsRay(this, intersects);
+        }
+        if (intersects.length === 0) {
+            return null;
+        }
+        return intersects.sort(function (a, b) {
+            return a.distance - b.distance;
+        });
+    };
 }
+//# sourceMappingURL=ray.js.map
 
-function enhance$1() {
+function enhance$2() {
     pc.MeshInstance.prototype.intersectsRay = (function () {
         var localRay = new pc.Ray();
         var distance = new pc.Vec3();
@@ -1143,8 +1200,9 @@ function enhance$1() {
         };
     })();
 }
+//# sourceMappingURL=mesh.js.map
 
-function enhance$2() {
+function enhance$3() {
     pc.BoundingBox.prototype.toJSON = function () {
         return {
             center: Array.from(this.center.data),
@@ -1152,8 +1210,9 @@ function enhance$2() {
         };
     };
 }
+//# sourceMappingURL=boundingBox.js.map
 
-function enhance$3() {
+function enhance$4() {
     pc.Texture.prototype.toJSON = (function () {
         var fields = [
             "name",
@@ -1205,8 +1264,9 @@ function enhance$3() {
         return toJSON;
     })();
 }
+//# sourceMappingURL=texture.js.map
 
-function enhance$4() {
+function enhance$5() {
     pc.StandardMaterial.prototype.toJSON = (function () {
         var fields = [
             "alphaTest", "alphaToCoverage",
@@ -1276,7 +1336,7 @@ function enhance$4() {
                 }
                 else {
                     if (field === "bumpiness") {
-                        result["bumpMapFactor"] = _this[field];
+                        result.bumpMapFactor = _this[field];
                     }
                     else {
                         result[field] = _this[field];
@@ -1309,15 +1369,17 @@ function enhance$4() {
         return toJSON;
     })();
 }
+//# sourceMappingURL=standardMaterial.js.map
 
-/// <reference path="./index.d.ts" />
 function enhancePlayCanvas() {
     enhance();
     enhance$1();
     enhance$2();
     enhance$3();
     enhance$4();
+    enhance$5();
 }
+//# sourceMappingURL=index.js.map
 
 var Application = /** @class */ (function () {
     function Application(canvas, options) {
@@ -1342,6 +1404,15 @@ var Application = /** @class */ (function () {
     Application.prototype.enhance = function () {
         enhancePlayCanvas();
         AnimationController$1(this);
+        if (this.$.mouse) {
+            pc.events.attach(this.$.mouse);
+        }
+        if (this.$.touch) {
+            pc.events.attach(this.$.touch);
+        }
+        if (this.$.keyboard) {
+            pc.events.attach(this.$.keyboard);
+        }
         this.isEnhanced = true;
         return this;
     };
@@ -1358,6 +1429,47 @@ var Application = /** @class */ (function () {
     return Application;
 }());
 
+var Picker = /** @class */ (function (_super) {
+    __extends(Picker, _super);
+    function Picker() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Picker.prototype.initialize = function () {
+        this.on("enable", this.onEnable, this);
+        this.on("disable", this.onDisable, this);
+        this.onEnable();
+    };
+    Picker.prototype.onEnable = function () {
+        this.app.mouse.on(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
+    };
+    Picker.prototype.onDisable = function () {
+        this.app.mouse.off(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
+    };
+    Picker.prototype.onMouseMove = function (e) {
+        this.select(e.x, e.y);
+    };
+    Picker.prototype.select = function (x, y) {
+        var _this = this;
+        var target = this.App.selection.select(x, y);
+        if (target) {
+            var intersects = this.App.selection
+                .prepareRay(x, y)
+                .intersectMeshInstances(target.model.meshInstances);
+            if (intersects) {
+                intersects.forEach(function (intersect) {
+                    _this.app.renderLine(intersect.vertices[0], intersect.vertices[1], Picker.color, 1);
+                    _this.app.renderLine(intersect.vertices[1], intersect.vertices[2], Picker.color, 1);
+                    _this.app.renderLine(intersect.vertices[2], intersect.vertices[0], Picker.color, 1);
+                });
+            }
+        }
+    };
+    Picker.__name = "picker";
+    Picker.color = new pc.Color(1, 0, 0, 1);
+    return Picker;
+}(ScriptType));
+var Picker$1 = createScript(Picker);
+
 var OrbitCamera = /** @class */ (function (_super) {
     __extends(OrbitCamera, _super);
     function OrbitCamera() {
@@ -1368,12 +1480,10 @@ var OrbitCamera = /** @class */ (function (_super) {
         _this._distance = 0;
         _this._pitch = 0;
         _this._yaw = 0;
-        _this._pivotPoint = new pc.Vec3;
-        _this._modelsAabb = new pc.BoundingBox;
-        _this.lastPoint = new pc.Vec2();
+        _this._pivotPoint = new pc.Vec3();
+        _this._modelsAabb = new pc.BoundingBox();
         return _this;
     }
-    
     Object.defineProperty(OrbitCamera.prototype, "distance", {
         get: function () {
             return this._targetDistance;
@@ -1544,13 +1654,45 @@ var OrbitCamera = /** @class */ (function (_super) {
     };
     OrbitCamera.__name = "orbitCamera";
     OrbitCamera.__attributes = {
-        distanceMax: { type: "number", default: 0, title: "Distance Max", description: "Setting this at 0 will give an infinite distance limit" },
-        distanceMin: { type: "number", default: 0, title: "Distance Min" },
-        pitchAngleMax: { type: "number", default: 90, title: "Pitch Angle Max (degrees)" },
-        pitchAngleMin: { type: "number", default: -90, title: "Pitch Angle Min (degrees)" },
-        inertiaFactor: { type: "number", default: 0, title: "Inertia Factor", description: "Higher value means that the camera will continue moving after the user has stopped dragging. 0 is fully responsive." },
-        focusEntity: { type: "entity", title: "Focus Entity", description: "Entity for the camera to focus on. If blank, then the camera will use the whole scene" },
-        frameOnStart: { type: "boolean", default: true, title: "Frame on Start", description: "Frames the entity or scene at the start of the application." },
+        distanceMax: {
+            type: "number",
+            default: 0,
+            title: "Distance Max",
+            description: "Setting this at 0 will give an infinite distance limit"
+        },
+        distanceMin: {
+            type: "number",
+            default: 0,
+            title: "Distance Min"
+        },
+        pitchAngleMax: {
+            type: "number",
+            default: 90,
+            title: "Pitch Angle Max (degrees)"
+        },
+        pitchAngleMin: {
+            type: "number",
+            default: -90,
+            title: "Pitch Angle Min (degrees)"
+        },
+        inertiaFactor: {
+            type: "number",
+            default: 0,
+            title: "Inertia Factor",
+            /* tslint:disable-next-line */
+            description: "Higher value means that the camera will continue moving after the user has stopped dragging. 0 is fully responsive."
+        },
+        focusEntity: {
+            type: "entity",
+            title: "Focus Entity",
+            description: "Entity for the camera to focus on. If blank, then the camera will use the whole scene"
+        },
+        frameOnStart: {
+            type: "boolean",
+            default: true,
+            title: "Frame on Start",
+            description: "Frames the entity or scene at the start of the application."
+        },
     };
     OrbitCamera.distanceBetween = new pc.Vec3();
     OrbitCamera.fromWorldPoint = new pc.Vec3();
@@ -1684,6 +1826,7 @@ var OrbitCameraMouseInput = /** @class */ (function (_super) {
     return OrbitCameraMouseInput;
 }(ScriptType));
 var OrbitCameraMouseInput$1 = createScript(OrbitCameraMouseInput);
+//# sourceMappingURL=orbitCameraMouseInput.js.map
 
 var OrbitCameraTouchInput = /** @class */ (function (_super) {
     __extends(OrbitCameraTouchInput, _super);
@@ -1814,14 +1957,17 @@ var OrbitCameraTouchInput = /** @class */ (function (_super) {
     return OrbitCameraTouchInput;
 }(ScriptType));
 var OrbitCameraTouchInput$1 = createScript(OrbitCameraTouchInput);
+//# sourceMappingURL=orbitCameraTouchInput.js.map
 
 var scripts = {
     createScript: createScript,
     ScriptType: ScriptType,
+    Picker: Picker$1,
     OrbitCamera: OrbitCamera$1,
     OrbitCameraMouseInput: OrbitCameraMouseInput$1,
     OrbitCameraTouchInput: OrbitCameraTouchInput$1
 };
+//# sourceMappingURL=index.js.map
 
 var Camera = /** @class */ (function (_super) {
     __extends(Camera, _super);
