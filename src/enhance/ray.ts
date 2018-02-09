@@ -1,3 +1,5 @@
+import { MeshInstanceIntersection } from "./mesh";
+
 export default function enhance() {
     pc.Ray.prototype.intersectTriangle = (() => {
         let diff = new pc.Vec3();
@@ -58,4 +60,21 @@ export default function enhance() {
             return res.copy(this.direction).scale(QdN / DdN).add(this.origin);
         };
     })();
+
+    pc.Ray.prototype.intersectMeshInstances = function(meshInstances: pc.MeshInstance[]) {
+        let i = 0;
+        let intersects = [] as MeshInstanceIntersection[];
+
+        for (i = 0; i < meshInstances.length; i++) {
+            meshInstances[i].intersectsRay(this, intersects);
+        }
+
+        if (intersects.length === 0) {
+            return null;
+        }
+
+        return intersects.sort((a: MeshInstanceIntersection, b: MeshInstanceIntersection) => {
+            return a.distance - b.distance;
+        });
+    };
 }

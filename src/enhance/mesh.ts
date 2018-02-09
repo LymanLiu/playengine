@@ -1,3 +1,13 @@
+export interface MeshInstanceIntersection {
+    index: number;
+    distance: number;
+    point: pc.Vec3;
+    localPoint: pc.Vec3;
+    normal: pc.Vec3;
+    vertices: pc.Vec3[];
+    meshInstance: pc.MeshInstance;
+}
+
 export default function enhance() {
 
     pc.MeshInstance.prototype.intersectsRay = (() => {
@@ -25,7 +35,7 @@ export default function enhance() {
             b: pc.Vec3,
             c: pc.Vec3,
             point?: pc.Vec3
-        ): pc.MeshInstanceIntersection {
+        ): MeshInstanceIntersection {
             let backfaceCulling = (
                 meshInstance.material.cull === pc.CULLFACE_BACK ||
                 meshInstance.material.cull === pc.CULLFACE_FRONTANDBACK
@@ -73,7 +83,7 @@ export default function enhance() {
             };
         }
 
-        return function intersectsRay(worldRay: pc.Ray, intersects?: pc.MeshInstanceIntersection[]) {
+        return function intersectsRay(worldRay: pc.Ray, intersects?: MeshInstanceIntersection[]) {
             aabb.copy(this.aabb);
 
             if (aabb.intersectsRay(worldRay) === false) {

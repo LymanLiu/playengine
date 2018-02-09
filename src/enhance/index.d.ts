@@ -40,6 +40,8 @@ declare namespace pc {
             backfaceCulling: boolean,
             res?: pc.Vec3
         ): pc.Vec3;
+
+        intersectMeshInstances(meshInstances: pc.MeshInstance[]): MeshInstanceIntersection[];
     }
 
     interface MeshInstance {
