@@ -6,7 +6,7 @@ import {
 
 export default function enhance() {
 
-    pc.StandardMaterial.prototype.toJSON = (function() {
+    pc.StandardMaterial.prototype.toJSON = (() => {
 
         let fields = [
             "alphaTest", "alphaToCoverage",
@@ -57,7 +57,7 @@ export default function enhance() {
         function toJSON(options: pc.ToJSONOptions = {}): object {
             let result: any = {};
 
-            fields.forEach(field => {
+            fields.forEach((field: string) => {
                 // texture
                 if (MATERIAL_TEXTURE_FIELDS2[field]) {
 
@@ -80,7 +80,7 @@ export default function enhance() {
                 } else {
 
                     if (field === "bumpiness") {
-                        result["bumpMapFactor"] = this[field];
+                        result.bumpMapFactor = this[field];
                     } else {
                         result[field] = this[field];
                     }
@@ -88,7 +88,7 @@ export default function enhance() {
             });
 
             if (options.diff) {
-                fields.forEach(field => {
+                fields.forEach((field: string) => {
 
                     if (field === "bumpiness") {
                         field = "bumpMapFactor";

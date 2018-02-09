@@ -1,8 +1,10 @@
 declare namespace pc {
 
+    type EventListener = (...args: any[]) => void;
+
     /* tslint:disable-next-line */
     interface events {
-        on(name: string, callback: (...args: any[]) => void, scope?: any, priority?: number): void;
+        on(name: string, callback: pc.EventListener, scope?: any, priority?: number): void;
     }
 
     interface MeshInstanceIntersection {

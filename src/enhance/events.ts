@@ -1,5 +1,5 @@
 interface EventCallback {
-    callback: (...args: any[]) => void;
+    callback: pc.EventListener;
     scope: any;
     priority: number;
 }
@@ -12,7 +12,7 @@ export default function enhance() {
 
     pc.events.on = function(
         name: string,
-        callback: (...args: any[]) => void,
+        callback: pc.EventListener,
         scope?: any,
         priority?: number
     ) {
