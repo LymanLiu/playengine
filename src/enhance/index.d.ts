@@ -1,16 +1,22 @@
 declare namespace pc {
-    type MeshInstanceIntersection = {
-        index: number,
-        distance: number,
-        point: pc.Vec3,
-        localPoint: pc.Vec3
-        normal: pc.Vec3
-        vertices: pc.Vec3[],
-        meshInstance: pc.MeshInstance
-    };
+
+    /* tslint:disable-next-line */
+    interface events {
+        on(name: string, callback: (...args: any[]) => void, scope?: any, priority?: number): void;
+    }
+
+    interface MeshInstanceIntersection {
+        index: number;
+        distance: number;
+        point: pc.Vec3;
+        localPoint: pc.Vec3;
+        normal: pc.Vec3;
+        vertices: pc.Vec3[];
+        meshInstance: pc.MeshInstance;
+    }
 
     interface ToJSONOptions {
-        diff?: boolean
+        diff?: boolean;
     }
 
     interface EnhanceAsset {

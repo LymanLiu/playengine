@@ -51,6 +51,19 @@ export class Application {
     public enhance() {
         enhancePlayCanvas();
         AnimationController(this);
+
+        if (this.$.mouse) {
+            pc.events.attach(this.$.mouse);
+        }
+
+        if (this.$.touch) {
+            pc.events.attach(this.$.touch);
+        }
+
+        if (this.$.keyboard) {
+            pc.events.attach(this.$.keyboard);
+        }
+
         this.isEnhanced = true;
 
         return this;
