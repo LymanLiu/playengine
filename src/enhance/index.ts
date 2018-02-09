@@ -1,4 +1,3 @@
-/// <reference path="./index.d.ts" />
 import enhanceEvents from "./events";
 import enhanceRay from "./ray";
 import enhanceMesh from "./mesh";

@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "es5",
     "diagnostics": true,
-    "lib": ["es5", "es6", "dom"],
+    "lib": [
+      "es5",
+      "es6",
+      "dom"
+    ],
     "noEmitOnError": true,
     "noImplicitAny": true,
     "noImplicitThis": false,
@@ -10,8 +14,11 @@
     "noUnusedLocals": true,
     "experimentalDecorators": true
   },
+  "files": [
+    "src/enhance/index.d.ts"
+  ],
   "include": [
-    "src"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules"
