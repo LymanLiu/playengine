@@ -1,42 +1,73 @@
 import { createScript, ScriptType } from "../script";
 
 export class OrbitCamera extends ScriptType {
-    static __name = "orbitCamera";
+    public static __name = "orbitCamera";
 
-    static __attributes = {
-        distanceMax: { type: "number", default: 0, title: "Distance Max", description: "Setting this at 0 will give an infinite distance limit" },
-        distanceMin: { type: "number", default: 0, title: "Distance Min" },
-        pitchAngleMax: { type: "number", default: 90, title: "Pitch Angle Max (degrees)" },
-        pitchAngleMin: { type: "number", default: -90, title: "Pitch Angle Min (degrees)" },
-        inertiaFactor: { type: "number", default: 0, title: "Inertia Factor", description: "Higher value means that the camera will continue moving after the user has stopped dragging. 0 is fully responsive." },
-        focusEntity: { type: "entity", title: "Focus Entity", description: "Entity for the camera to focus on. If blank, then the camera will use the whole scene" },
-        frameOnStart: { type: "boolean", default: true, title: "Frame on Start", description: "Frames the entity or scene at the start of the application." },
+    public static __attributes = {
+        distanceMax: {
+            type: "number",
+            default: 0,
+            title: "Distance Max",
+            description: "Setting this at 0 will give an infinite distance limit"
+        },
+        distanceMin: {
+            type: "number",
+            default: 0,
+            title: "Distance Min"
+        },
+        pitchAngleMax: {
+            type: "number",
+            default: 90,
+            title: "Pitch Angle Max (degrees)"
+        },
+        pitchAngleMin: {
+            type: "number",
+            default: -90,
+            title: "Pitch Angle Min (degrees)"
+        },
+        inertiaFactor: {
+            type: "number",
+            default: 0,
+            title: "Inertia Factor",
+            /* tslint:disable-next-line */
+            description: "Higher value means that the camera will continue moving after the user has stopped dragging. 0 is fully responsive."
+        },
+        focusEntity: {
+            type: "entity",
+            title: "Focus Entity",
+            description: "Entity for the camera to focus on. If blank, then the camera will use the whole scene"
+        },
+        frameOnStart: {
+            type: "boolean",
+            default: true,
+            title: "Frame on Start",
+            description: "Frames the entity or scene at the start of the application."
+        },
     };
 
-    distanceMax: number;
-    distanceMin: number;
-    pitchAngleMax: number;
-    pitchAngleMin: number;
-    inertiaFactor: number;
-    focusEntity: pc.Entity;
-    frameOnStart: boolean;
+    public distanceMax: number;
+    public distanceMin: number;
+    public pitchAngleMax: number;
+    public pitchAngleMin: number;
+    public inertiaFactor: number;
+    public focusEntity: pc.Entity;
+    public frameOnStart: boolean;
 
-    _targetDistance = 0;
-    _targetPitch = 0;
-    _targetYaw = 0;
-    _distance = 0;
-    _pitch = 0;
-    _yaw = 0;
-    _pivotPoint = new pc.Vec3;
-    _modelsAabb = new pc.BoundingBox;;
-    lastPoint = new pc.Vec2();
+    private _targetDistance = 0;
+    private _targetPitch = 0;
+    private _targetYaw = 0;
+    private _distance = 0;
+    private _pitch = 0;
+    private _yaw = 0;
+    private _pivotPoint = new pc.Vec3();
+    private _modelsAabb = new pc.BoundingBox();
 
-    static distanceBetween = new pc.Vec3();
-    static fromWorldPoint = new pc.Vec3();
-    static toWorldPoint = new pc.Vec3();
-    static worldDiff = new pc.Vec3();
-    static quatWithoutYaw = new pc.Quat();
-    static yawOffset = new pc.Quat();
+    public static distanceBetween = new pc.Vec3();
+    public static fromWorldPoint = new pc.Vec3();
+    public static toWorldPoint = new pc.Vec3();
+    public static worldDiff = new pc.Vec3();
+    public static quatWithoutYaw = new pc.Quat();
+    public static yawOffset = new pc.Quat();
 
     get distance() {
         return this._targetDistance;
@@ -64,8 +95,8 @@ export class OrbitCamera extends ScriptType {
         // Ensure that the yaw takes the shortest route by making sure that
         // the difference between the targetYaw and the actual is 180 degrees
         // in either direction
-        var diff = this._targetYaw - this._yaw;
-        var reminder = diff % 360;
+        let diff = this._targetYaw - this._yaw;
+        let reminder = diff % 360;
         if (reminder > 180) {
             this._targetYaw = this._yaw - (360 - reminder);
         } else if (reminder < -180) {
@@ -83,7 +114,7 @@ export class OrbitCamera extends ScriptType {
         this._pivotPoint.copy(value);
     }
 
-    initialize() {
+    public initialize() {
         let cameraQuat = this.entity.getRotation();
 
         this._checkAspectRatio();
@@ -98,8 +129,8 @@ export class OrbitCamera extends ScriptType {
         this._targetPitch = this._pitch;
     }
 
-    update(dt: number) {
-        var t = this.inertiaFactor === 0 ? 1 : Math.min(dt / this.inertiaFactor, 1);
+    public update(dt: number) {
+        let t = this.inertiaFactor === 0 ? 1 : Math.min(dt / this.inertiaFactor, 1);
         this._distance = pc.math.lerp(this._distance, this._targetDistance, t);
         this._yaw = pc.math.lerp(this._yaw, this._targetYaw, t);
         this._pitch = pc.math.lerp(this._pitch, this._targetPitch, t);
@@ -107,12 +138,12 @@ export class OrbitCamera extends ScriptType {
         this._updatePosition();
     }
 
-    focus(focusEntity: pc.Entity) {
+    public focus(focusEntity: pc.Entity) {
         this._buildAabb(focusEntity, 0);
 
-        var halfExtents = this._modelsAabb.halfExtents;
+        let halfExtents = this._modelsAabb.halfExtents;
 
-        var distance = Math.max(halfExtents.x, Math.max(halfExtents.y, halfExtents.z));
+        let distance = Math.max(halfExtents.x, Math.max(halfExtents.y, halfExtents.z));
         distance = (distance / Math.tan(0.5 * this.entity.camera.fov * pc.math.DEG_TO_RAD));
         distance = (distance * 2);
 
@@ -123,19 +154,19 @@ export class OrbitCamera extends ScriptType {
         this._pivotPoint.copy(this._modelsAabb.center);
     }
 
-    resetAndLookAt(resetPoint: pc.Vec3, lookAtPoint: pc.Vec3) {
+    public resetAndLookAt(resetPoint: pc.Vec3, lookAtPoint: pc.Vec3) {
         this.pivotPoint.copy(lookAtPoint);
         this.entity.setPosition(resetPoint);
 
         this.entity.lookAt(lookAtPoint);
 
-        var distance = OrbitCamera.distanceBetween;
+        let distance = OrbitCamera.distanceBetween;
         distance.sub2(lookAtPoint, resetPoint);
         this.distance = distance.length();
 
         this.pivotPoint.copy(lookAtPoint);
 
-        var cameraQuat = this.entity.getRotation();
+        let cameraQuat = this.entity.getRotation();
         this.yaw = this._calcYaw(cameraQuat);
         this.pitch = this._calcPitch(cameraQuat, this.yaw);
 
@@ -143,7 +174,7 @@ export class OrbitCamera extends ScriptType {
         this._updatePosition();
     }
 
-    reset(pitch: number, yaw: number, distance: number) {
+    public reset(pitch: number, yaw: number, distance: number) {
         this.pitch = pitch;
         this.yaw = yaw;
         this.distance = distance;
@@ -155,7 +186,7 @@ export class OrbitCamera extends ScriptType {
         this.entity.setLocalPosition(0, 0, 0);
         this.entity.setLocalEulerAngles(this._pitch, this._yaw, 0);
 
-        var position = this.entity.getPosition();
+        let position = this.entity.getPosition();
         position.copy(this.entity.forward);
         position.scale(-this._distance);
         position.add(this.pivotPoint);
@@ -194,7 +225,7 @@ export class OrbitCamera extends ScriptType {
         }
 
         for (i = 0; i < entity.children.length; ++i) {
-            modelsAdded += this._buildAabb(<pc.Entity>entity.children[i], modelsAdded);
+            modelsAdded += this._buildAabb(entity.children[i] as pc.Entity, modelsAdded);
         }
 
         return modelsAdded;
