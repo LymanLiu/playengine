@@ -62,19 +62,26 @@ export default class Selection {
         return this;
     }
 
-    public select(x: number, y: number) {
-        this.checkCamera();
-
-        let result = null;
+    public prepareRay(x: number, y: number) {
         let camera = this.camera.entity.camera;
         let fromPoint = this.fromPoint;
         let toPoint = this.toPoint;
         let ray = this.worldRay;
-        let entities = this.app.entities.list();
         camera.screenToWorld(x, y, camera.nearClip, fromPoint);
         camera.screenToWorld(x, y, camera.farClip, toPoint);
         ray.origin.copy(fromPoint);
         ray.direction.copy(toPoint).sub(ray.origin).normalize();
+
+        return ray;
+    }
+
+    public select(x: number, y: number) {
+        this.checkCamera();
+        this.prepareRay(x, y);
+
+        let result = null;
+        let ray = this.worldRay;
+        let entities = this.app.entities.list();
 
         for (let entity of entities) {
             if (entity instanceof Model && entity.aabb.intersectsRay(ray)) {
