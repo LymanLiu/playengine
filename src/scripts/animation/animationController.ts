@@ -1,4 +1,4 @@
-import { createScript, ScriptType } from "./script";
+import { createScript, ScriptType } from "../script";
 
 class AnimationController extends ScriptType {
     public static __name = "animationController";

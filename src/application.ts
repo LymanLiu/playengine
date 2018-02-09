@@ -1,5 +1,5 @@
 import { TextureManager, CubemapManager, MaterialManager, ModelManager, AnimationManager } from "./assets";
-import AnimationController from "./scripts/animationController";
+import AnimationController from "./scripts/animation/animationController";
 import EntityManager from "./entities/entities";
 import Selection from "./selection";
 import enhancePlayCanvas from "./enhance";

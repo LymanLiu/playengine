@@ -1,4 +1,4 @@
-import { createScript, ScriptType } from "./script";
+import { createScript, ScriptType } from "../script";
 
 export class OrbitCamera extends ScriptType {
     static __name = "orbitCamera";

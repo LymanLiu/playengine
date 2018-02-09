@@ -1,4 +1,4 @@
-import { createScript, ScriptType } from "./script";
+import { createScript, ScriptType } from "../script";
 import { OrbitCamera } from "./orbitCamera";
 
 class OrbitCameraMouseInput extends ScriptType {

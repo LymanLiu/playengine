@@ -1,7 +1,7 @@
 import { createScript, ScriptType } from "./script";
-import OrbitCamera from "./orbitCamera";
-import OrbitCameraMouseInput from "./orbitCameraMouseInput";
-import OrbitCameraTouchInput from "./orbitCameraTouchInput";
+import OrbitCamera from "./camera/orbitCamera";
+import OrbitCameraMouseInput from "./camera/orbitCameraMouseInput";
+import OrbitCameraTouchInput from "./camera/orbitCameraTouchInput";
 
 export const scripts = {
     createScript,
@@ -9,4 +9,4 @@ export const scripts = {
     OrbitCamera,
     OrbitCameraMouseInput,
     OrbitCameraTouchInput
-}
+};
