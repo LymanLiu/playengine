@@ -12,11 +12,7 @@
     "trailing-comma": false,
     "prefer-const": false,
     "no-console": false,
-    "variable-name": [
-      true,
-      "allow-leading-underscore",
-      "allow-pascal-case"
-    ],
+    "variable-name": false,
     "quotemark": [
       true,
       "double",
