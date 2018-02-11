@@ -1,15 +1,23 @@
 import { createScript, ScriptType } from "../script";
 import { MeshInstanceIntersection } from "../../enhance/mesh";
 
-class Picker extends ScriptType {
+interface PickerBehavior {
+    onSelect(result: MeshInstanceIntersection[]): void;
+}
+
+class Picker extends ScriptType implements PickerBehavior {
     public static readonly __name = "picker";
-    private static readonly color = new pc.Color(1, 0, 0, 1);
 
     public initialize() {
         this.on("enable", this.onEnable, this);
         this.on("disable", this.onDisable, this);
 
         this.onEnable();
+    }
+
+    /* tslint:disable-next-line  */
+    public onSelect(_result: MeshInstanceIntersection[]) {
+
     }
 
     protected onEnable() {
@@ -21,25 +29,20 @@ class Picker extends ScriptType {
     }
 
     private onMouseMove(e: pc.MouseEvent) {
-        this.select(e.x, e.y);
+        const result = this.select(e.x, e.y);
+        this.onSelect(result);
     }
 
-    private select(x: number, y: number) {
+    private select(x: number, y: number): MeshInstanceIntersection[] {
         const target = this.App.selection.select(x, y);
 
-        if (target) {
-            const intersects = this.App.selection
-                .prepareRay(x, y)
-                .intersectMeshInstances(target.model.meshInstances);
-
-            if (intersects) {
-                intersects.forEach((intersect: MeshInstanceIntersection) => {
-                    this.app.renderLine(intersect.vertices[0], intersect.vertices[1], Picker.color, 1);
-                    this.app.renderLine(intersect.vertices[1], intersect.vertices[2], Picker.color, 1);
-                    this.app.renderLine(intersect.vertices[2], intersect.vertices[0], Picker.color, 1);
-                });
-            }
+        if (!target || !target.model || !target.model.meshInstances) {
+            return null;
         }
+
+        return this.App.selection
+            .prepareRay(x, y)
+            .intersectMeshInstances(target.model.meshInstances);
     }
 }
 
