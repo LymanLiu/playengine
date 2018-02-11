@@ -1439,6 +1439,9 @@ var Picker = /** @class */ (function (_super) {
         this.on("disable", this.onDisable, this);
         this.onEnable();
     };
+    /* tslint:disable-next-line  */
+    Picker.prototype.onSelect = function (_result) {
+    };
     Picker.prototype.onEnable = function () {
         this.app.mouse.on(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
     };
@@ -1446,26 +1449,19 @@ var Picker = /** @class */ (function (_super) {
         this.app.mouse.off(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
     };
     Picker.prototype.onMouseMove = function (e) {
-        this.select(e.x, e.y);
+        var result = this.select(e.x, e.y);
+        this.onSelect(result);
     };
     Picker.prototype.select = function (x, y) {
-        var _this = this;
         var target = this.App.selection.select(x, y);
-        if (target) {
-            var intersects = this.App.selection
-                .prepareRay(x, y)
-                .intersectMeshInstances(target.model.meshInstances);
-            if (intersects) {
-                intersects.forEach(function (intersect) {
-                    _this.app.renderLine(intersect.vertices[0], intersect.vertices[1], Picker.color, 1);
-                    _this.app.renderLine(intersect.vertices[1], intersect.vertices[2], Picker.color, 1);
-                    _this.app.renderLine(intersect.vertices[2], intersect.vertices[0], Picker.color, 1);
-                });
-            }
+        if (!target || !target.model || !target.model.meshInstances) {
+            return null;
         }
+        return this.App.selection
+            .prepareRay(x, y)
+            .intersectMeshInstances(target.model.meshInstances);
     };
     Picker.__name = "picker";
-    Picker.color = new pc.Color(1, 0, 0, 1);
     return Picker;
 }(ScriptType));
 var Picker$1 = createScript(Picker);
