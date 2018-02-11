@@ -8,6 +8,16 @@ var orbitCamera = new pe.scripts.OrbitCamera(app);
 var orbitCameraMouseInput = new pe.scripts.OrbitCameraMouseInput(app);
 var orbitCameraTouchInput = new pe.scripts.OrbitCameraTouchInput(app);
 var picker = new pe.scripts.Picker(app);
+var red = new pc.Color(1, 0, 0, 1);
+picker.prototype.onSelect = function(results) {
+    if (results) {
+        results.forEach(result => {
+            this.app.renderLine(result.vertices[0], result.vertices[1], red, pc.LINEBATCH_OVERLAY);
+            this.app.renderLine(result.vertices[1], result.vertices[2], red, pc.LINEBATCH_OVERLAY);
+            this.app.renderLine(result.vertices[2], result.vertices[0], red, pc.LINEBATCH_OVERLAY);
+        });
+    }
+}
 
 var camera = new pe.Camera({
     name: 'camera',
