@@ -1429,6 +1429,39 @@ var Application = /** @class */ (function () {
     return Application;
 }());
 
+var Camera = /** @class */ (function (_super) {
+    __extends(Camera, _super);
+    function Camera(args) {
+        if (args === void 0) { args = {}; }
+        var _this = _super.call(this, args) || this;
+        _this.type = ENTITY_CAMERA;
+        _this.entity.addComponent("camera");
+        return _this;
+    }
+    return Camera;
+}(Entity));
+
+var LightType;
+(function (LightType) {
+    LightType["DIRECTIONAL"] = "directional";
+    LightType["POINT"] = "point";
+    LightType["SPOT"] = "spot";
+})(LightType || (LightType = {}));
+var Light = /** @class */ (function (_super) {
+    __extends(Light, _super);
+    function Light(args) {
+        if (args === void 0) { args = {}; }
+        var _this = _super.call(this, args) || this;
+        _this.type = ENTITY_LIGHT;
+        _this.entity.addComponent("light");
+        if (args.type) {
+            _this.entity.light.type = args.type;
+        }
+        return _this;
+    }
+    return Light;
+}(Entity));
+
 var Picker = /** @class */ (function (_super) {
     __extends(Picker, _super);
     function Picker() {
@@ -1465,6 +1498,7 @@ var Picker = /** @class */ (function (_super) {
     return Picker;
 }(ScriptType));
 var Picker$1 = createScript(Picker);
+//# sourceMappingURL=picker.js.map
 
 var OrbitCamera = /** @class */ (function (_super) {
     __extends(OrbitCamera, _super);
@@ -1965,45 +1999,38 @@ var scripts = {
 };
 //# sourceMappingURL=index.js.map
 
-var Camera = /** @class */ (function (_super) {
-    __extends(Camera, _super);
-    function Camera(args) {
-        if (args === void 0) { args = {}; }
-        var _this = _super.call(this, args) || this;
-        _this.type = ENTITY_CAMERA;
-        _this.entity.addComponent("camera");
-        return _this;
-    }
-    return Camera;
-}(Entity));
+function createShader(shaderDefinition) {
+    return function (graphicsDevice) {
+        shaderDefinition.fshader = "precision " + graphicsDevice.precision + " float;\n" + shaderDefinition.fshader;
+        return new pc.Shader(graphicsDevice, shaderDefinition);
+    };
+}
 
-var LightType;
-(function (LightType) {
-    LightType["DIRECTIONAL"] = "directional";
-    LightType["POINT"] = "point";
-    LightType["SPOT"] = "spot";
-})(LightType || (LightType = {}));
-var Light = /** @class */ (function (_super) {
-    __extends(Light, _super);
-    function Light(args) {
-        if (args === void 0) { args = {}; }
-        var _this = _super.call(this, args) || this;
-        _this.type = ENTITY_LIGHT;
-        _this.entity.addComponent("light");
-        if (args.type) {
-            _this.entity.light.type = args.type;
-        }
-        return _this;
-    }
-    return Light;
-}(Entity));
+var vshader = "\nattribute vec3 aPosition;\nattribute vec3 aNormal;\n\nuniform mat4 matrix_view;\nuniform mat4 matrix_model;\nuniform mat3 matrix_normal;\nuniform mat4 matrix_viewProjection;\n\nvarying vec3 vNormal;\n\nvoid main(void) {\n    vNormal = mat3(matrix_view) * matrix_normal * aNormal;\n    gl_Position = matrix_viewProjection * matrix_model * vec4(aPosition, 1.0);\n}\n";
+var fshader = "\nvarying vec3 vNormal;\n\nvoid main(void) {\n  vec3 normalViewColor = normalize(vNormal) * 0.5 + 0.5;\n  gl_FragColor  = vec4(normalViewColor, 1.0);\n}\n";
+var shaderDefinition = {
+    attributes: {
+        aPosition: pc.SEMANTIC_POSITION,
+        aNormal: pc.SEMANTIC_NORMAL
+    },
+    vshader: vshader,
+    fshader: fshader
+};
+var MeshNormalShader = createShader(shaderDefinition);
+//# sourceMappingURL=index.js.map
+
+var shaders = {
+    MeshNormalShader: MeshNormalShader
+};
+//# sourceMappingURL=index.js.map
 
 exports.Application = Application;
-exports.scripts = scripts;
 exports.Entity = Entity;
 exports.Model = Model;
 exports.Camera = Camera;
 exports.Light = Light;
+exports.scripts = scripts;
+exports.shaders = shaders;
 exports.constants = constants;
 
 Object.defineProperty(exports, '__esModule', { value: true });
