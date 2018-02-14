@@ -1,6 +1,7 @@
 import { TextureManager, CubemapManager, MaterialManager, ModelManager, AnimationManager } from "./assets";
 import AnimationController from "./scripts/animation/animationController";
 import EntityManager from "./entities/entities";
+import GizmoManager from "./gizmos/gizmos";
 import Selection from "./selection";
 import enhancePlayCanvas from "./enhance";
 
@@ -22,6 +23,7 @@ export class Application {
     public materials: MaterialManager;
     public models: ModelManager;
     public animations: AnimationManager;
+    public gizmos: GizmoManager;
     public selection: Selection;
 
     public isEnhanced = false;
@@ -43,6 +45,7 @@ export class Application {
         this.materials = new MaterialManager(this);
         this.models = new ModelManager(this);
         this.animations = new AnimationManager(this);
+        this.gizmos = new GizmoManager(this);
         this.selection = new Selection(this);
 
         this.onResize = this._onResize.bind(this);
