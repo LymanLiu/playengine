@@ -166,11 +166,13 @@ var ENTITY_BASE = "entity";
 var ENTITY_CAMERA = "camera";
 var ENTITY_LIGHT = "light";
 var ENTITY_MODEL = "model";
+var GIZMO_GRID = "grid";
 var constants = {
     ENTITY_BASE: ENTITY_BASE,
     ENTITY_CAMERA: ENTITY_CAMERA,
     ENTITY_LIGHT: ENTITY_LIGHT,
     ENTITY_MODEL: ENTITY_MODEL,
+    GIZMO_GRID: GIZMO_GRID,
     MATERIAL_OBJECT_FIELDS: MATERIAL_OBJECT_FIELDS,
     MATERIAL_OBJECT_FIELDS2: MATERIAL_OBJECT_FIELDS2,
     MATERIAL_ARRAY_FIELDS: MATERIAL_ARRAY_FIELDS,
@@ -671,6 +673,155 @@ var EntityManager = /** @class */ (function () {
         this.remove(uid);
     };
     return EntityManager;
+}());
+
+var Gizmo = /** @class */ (function () {
+    function Gizmo(app) {
+        this.app = app;
+    }
+    return Gizmo;
+}());
+
+var GizmoGrid = /** @class */ (function (_super) {
+    __extends(GizmoGrid, _super);
+    function GizmoGrid(app) {
+        var _this = _super.call(this, app) || this;
+        _this._size = 10;
+        _this._divisions = 10;
+        _this._gridColor = new pc.Color(1, 1, 1, 1);
+        _this._axisColor = new pc.Color(0, 0, 0, 1);
+        _this.entity = new pc.Entity();
+        _this.entity.enabled = false;
+        _this.entity.addComponent("model");
+        _this.create();
+        _this.app.$.root.addChild(_this.entity);
+        return _this;
+    }
+    Object.defineProperty(GizmoGrid.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (value) {
+            this._size = value;
+            this.create();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GizmoGrid.prototype, "divisions", {
+        get: function () {
+            return this._divisions;
+        },
+        set: function (value) {
+            this._divisions = value;
+            this.create();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GizmoGrid.prototype, "gridColor", {
+        get: function () {
+            return this._gridColor;
+        },
+        set: function (value) {
+            this._gridColor = value;
+            this.create();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GizmoGrid.prototype, "axisColor", {
+        get: function () {
+            return this._axisColor;
+        },
+        set: function (value) {
+            this._axisColor = value;
+            this.create();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GizmoGrid.prototype.attach = function () {
+        this.entity.enabled = true;
+    };
+    GizmoGrid.prototype.detach = function () {
+        this.entity.enabled = false;
+    };
+    GizmoGrid.prototype.create = function () {
+        var size = this.size;
+        var divisions = this.divisions;
+        var halfSize = size / 2;
+        var center = divisions / 2;
+        var step = size / divisions;
+        var numVerts = (divisions + 1) * 4;
+        var graphicsDevice = this.app.$.graphicsDevice;
+        var vertexFormat = new pc.VertexFormat(graphicsDevice, [
+            { semantic: pc.SEMANTIC_POSITION, components: 3, type: pc.TYPE_FLOAT32 },
+            { semantic: pc.SEMANTIC_COLOR, components: 4, type: pc.TYPE_FLOAT32 }
+        ]);
+        var vertexBuffer = new pc.VertexBuffer(graphicsDevice, vertexFormat, numVerts);
+        var vertexIterator = new pc.VertexIterator(vertexBuffer);
+        for (var i = 0, j = -halfSize; i <= divisions; i++, j += step) {
+            var color = i === center ? this._axisColor : this._gridColor;
+            vertexIterator.element[pc.SEMANTIC_POSITION].set(-halfSize, 0, j);
+            vertexIterator.element[pc.SEMANTIC_COLOR].set(color.r, color.g, color.b, color.a);
+            vertexIterator.next();
+            vertexIterator.element[pc.SEMANTIC_POSITION].set(halfSize, 0, j);
+            vertexIterator.element[pc.SEMANTIC_COLOR].set(color.r, color.g, color.b, color.a);
+            vertexIterator.next();
+            vertexIterator.element[pc.SEMANTIC_POSITION].set(j, 0, -halfSize);
+            vertexIterator.element[pc.SEMANTIC_COLOR].set(color.r, color.g, color.b, color.a);
+            vertexIterator.next();
+            vertexIterator.element[pc.SEMANTIC_POSITION].set(j, 0, halfSize);
+            vertexIterator.element[pc.SEMANTIC_COLOR].set(color.r, color.g, color.b, color.a);
+            vertexIterator.next();
+        }
+        vertexIterator.end();
+        var mesh = new pc.Mesh();
+        mesh.vertexBuffer = vertexBuffer;
+        mesh.primitive[0].type = pc.PRIMITIVE_LINES;
+        mesh.primitive[0].base = 0;
+        mesh.primitive[0].count = numVerts;
+        mesh.primitive[0].indexed = false;
+        var node = new pc.GraphNode();
+        var library = this.app.$.graphicsDevice.getProgramLibrary();
+        var shader = library.getProgram("basic", { vertexColors: true, diffuseMapping: false });
+        var material = new pc.Material();
+        material.shader = shader;
+        var meshInstance = new pc.MeshInstance(node, mesh, material);
+        var model = new pc.Model();
+        model.graph = node;
+        model.meshInstances = [meshInstance];
+        this.entity.model.model = model;
+    };
+    GizmoGrid.prototype.destroy = function () {
+        this.entity.model.model.destroy();
+    };
+    return GizmoGrid;
+}(Gizmo));
+
+var GizmoManager = /** @class */ (function () {
+    function GizmoManager(app) {
+        this.app = app;
+    }
+    GizmoManager.prototype.create = function (type) {
+        switch (type) {
+            case GIZMO_GRID:
+                this.grid = new GizmoGrid(this.app);
+                break;
+        }
+        return this;
+    };
+    GizmoManager.prototype.remove = function (type) {
+        switch (type) {
+            case GIZMO_GRID:
+                this.grid.destroy();
+                this.grid = null;
+                break;
+        }
+        return this;
+    };
+    return GizmoManager;
 }());
 
 var Entity = /** @class */ (function () {
@@ -1398,6 +1549,7 @@ var Application = /** @class */ (function () {
         this.materials = new MaterialManager(this);
         this.models = new ModelManager(this);
         this.animations = new AnimationManager(this);
+        this.gizmos = new GizmoManager(this);
         this.selection = new Selection(this);
         this.onResize = this._onResize.bind(this);
     }
@@ -2005,6 +2157,7 @@ function createShader(shaderDefinition) {
         return new pc.Shader(graphicsDevice, shaderDefinition);
     };
 }
+//# sourceMappingURL=shader.js.map
 
 var vshader = "\nattribute vec3 aPosition;\nattribute vec3 aNormal;\n\nuniform mat4 matrix_view;\nuniform mat4 matrix_model;\nuniform mat3 matrix_normal;\nuniform mat4 matrix_viewProjection;\n\nvarying vec3 vNormal;\n\nvoid main(void) {\n    vNormal = mat3(matrix_view) * matrix_normal * aNormal;\n    gl_Position = matrix_viewProjection * matrix_model * vec4(aPosition, 1.0);\n}\n";
 var fshader = "\nvarying vec3 vNormal;\n\nvoid main(void) {\n  vec3 normalViewColor = normalize(vNormal) * 0.5 + 0.5;\n  gl_FragColor  = vec4(normalViewColor, 1.0);\n}\n";
