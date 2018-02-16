@@ -46,6 +46,7 @@ export let ENTITY_CAMERA = "camera";
 export let ENTITY_LIGHT = "light";
 export let ENTITY_MODEL = "model";
 
+export let GIZMO_AABB = "aabb";
 export let GIZMO_GRID = "grid";
 
 export default {
@@ -53,6 +54,7 @@ export default {
     ENTITY_CAMERA,
     ENTITY_LIGHT,
     ENTITY_MODEL,
+    GIZMO_AABB,
     GIZMO_GRID,
     MATERIAL_OBJECT_FIELDS,
     MATERIAL_OBJECT_FIELDS2,
