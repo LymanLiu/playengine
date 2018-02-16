@@ -166,12 +166,14 @@ var ENTITY_BASE = "entity";
 var ENTITY_CAMERA = "camera";
 var ENTITY_LIGHT = "light";
 var ENTITY_MODEL = "model";
+var GIZMO_AABB = "aabb";
 var GIZMO_GRID = "grid";
 var constants = {
     ENTITY_BASE: ENTITY_BASE,
     ENTITY_CAMERA: ENTITY_CAMERA,
     ENTITY_LIGHT: ENTITY_LIGHT,
     ENTITY_MODEL: ENTITY_MODEL,
+    GIZMO_AABB: GIZMO_AABB,
     GIZMO_GRID: GIZMO_GRID,
     MATERIAL_OBJECT_FIELDS: MATERIAL_OBJECT_FIELDS,
     MATERIAL_OBJECT_FIELDS2: MATERIAL_OBJECT_FIELDS2,
@@ -800,6 +802,118 @@ var GizmoGrid = /** @class */ (function (_super) {
     return GizmoGrid;
 }(Gizmo));
 
+var GizmoAabb = /** @class */ (function (_super) {
+    __extends(GizmoAabb, _super);
+    function GizmoAabb(app) {
+        var _this = _super.call(this, app) || this;
+        _this._color = new pc.Color(1, 1, 1, 1);
+        _this._target = null;
+        _this._vecA = new pc.Vec3();
+        _this._vecB = new pc.Vec3();
+        return _this;
+    }
+    Object.defineProperty(GizmoAabb.prototype, "color", {
+        get: function () {
+            return this._color;
+        },
+        set: function (color) {
+            this._color = color;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GizmoAabb.prototype, "target", {
+        get: function () {
+            return this._target;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GizmoAabb.prototype.attach = function (target) {
+        if (!target) {
+            throw Error("GizmoAabb should attach with Model or Model[]");
+        }
+        var onUpdate = Array.isArray(target) ? this.onUpdate2 : this.onUpdate;
+        this.detach();
+        this._target = target;
+        this.app.$.on("update", onUpdate, this);
+    };
+    GizmoAabb.prototype.detach = function () {
+        this._target = null;
+        this.app.$.off("update", this.onUpdate, this);
+        this.app.$.off("update", this.onUpdate2, this);
+    };
+    GizmoAabb.prototype.destroy = function () {
+        this.detach();
+    };
+    GizmoAabb.prototype.onUpdate = function () {
+        this.render(this._target.aabb);
+    };
+    GizmoAabb.prototype.onUpdate2 = function () {
+        var _this = this;
+        this._target.forEach(function (target) { return _this.render(target.aabb); });
+    };
+    GizmoAabb.prototype.render = function (aabb) {
+        /*
+
+          5____4
+        1/___0/|
+        | 6__|_7
+        2/___3/
+
+        */
+        // 0 - 1
+        this._vecA.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 0 - 3
+        this._vecA.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 0 - 4
+        this._vecA.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 1 - 2
+        this._vecA.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 1 - 5
+        this._vecA.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 2 - 3
+        this._vecA.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 2 - 6
+        this._vecA.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 3 - 7
+        this._vecA.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z + aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 4 - 5
+        this._vecA.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 4 - 7
+        this._vecA.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 5 - 6
+        this._vecA.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y + aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+        // 6 - 7
+        this._vecA.set(aabb.center.x - aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this._vecB.set(aabb.center.x + aabb.halfExtents.x, aabb.center.y - aabb.halfExtents.y, aabb.center.z - aabb.halfExtents.z);
+        this.app.$.renderLine(this._vecA, this._vecB, this._color);
+    };
+    return GizmoAabb;
+}(Gizmo));
+
 var GizmoManager = /** @class */ (function () {
     function GizmoManager(app) {
         this.app = app;
@@ -809,6 +923,9 @@ var GizmoManager = /** @class */ (function () {
             case GIZMO_GRID:
                 this.grid = new GizmoGrid(this.app);
                 break;
+            case GIZMO_AABB:
+                this.aabb = new GizmoAabb(this.app);
+                break;
         }
         return this;
     };
@@ -817,6 +934,10 @@ var GizmoManager = /** @class */ (function () {
             case GIZMO_GRID:
                 this.grid.destroy();
                 this.grid = null;
+                break;
+            case GIZMO_AABB:
+                this.aabb.destroy();
+                this.aabb = null;
                 break;
         }
         return this;
