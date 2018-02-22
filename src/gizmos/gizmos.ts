@@ -1,12 +1,14 @@
 import { Application } from "../application";
-import { GIZMO_AABB, GIZMO_GRID } from "../constants";
+import { GIZMO_AABB, GIZMO_GRID, GIZMO_TRANSFORM } from "../constants";
 import GizmoGrid from "./grid";
 import GizmoAabb from "./aabb";
+import GizmoTransform from "./transform";
 
 export default class GizmoManager {
     public app: Application;
     public grid: GizmoGrid;
     public aabb: GizmoAabb;
+    public transform: GizmoTransform;
 
     constructor(app: Application) {
         this.app = app;
@@ -19,6 +21,9 @@ export default class GizmoManager {
                 break;
             case GIZMO_AABB:
                 this.aabb = new GizmoAabb(this.app);
+                break;
+            case GIZMO_TRANSFORM:
+                this.transform = new GizmoTransform(this.app);
                 break;
         }
 

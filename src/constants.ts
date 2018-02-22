@@ -48,6 +48,7 @@ export let ENTITY_MODEL = "model";
 
 export let GIZMO_AABB = "aabb";
 export let GIZMO_GRID = "grid";
+export let GIZMO_TRANSFORM = "transform";
 
 export default {
     ENTITY_BASE,
@@ -56,6 +57,7 @@ export default {
     ENTITY_MODEL,
     GIZMO_AABB,
     GIZMO_GRID,
+    GIZMO_TRANSFORM,
     MATERIAL_OBJECT_FIELDS,
     MATERIAL_OBJECT_FIELDS2,
     MATERIAL_ARRAY_FIELDS,

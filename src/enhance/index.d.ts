@@ -7,6 +7,14 @@ declare namespace pc {
         on(name: string, callback: pc.EventListener, scope?: any, priority?: number): void;
     }
 
+    interface Mouse {
+        on(name: string, callback: pc.EventListener, scope?: any, priority?: number): void;
+    }
+
+    interface TouchDevice {
+        on(name: string, callback: pc.EventListener, scope?: any, priority?: number): void;
+    }
+
     interface MeshInstanceIntersection {
         index: number;
         distance: number;
@@ -47,4 +55,6 @@ declare namespace pc {
     interface MeshInstance {
         intersectsRay(worldRay: pc.Ray, intersects?: MeshInstanceIntersection[]): MeshInstanceIntersection[];
     }
+
+    function createLines(device: pc.GraphicsDevice, positions: number[]): pc.Mesh;
 }
