@@ -38,11 +38,11 @@ export class Entity {
             this.entity.setLocalScale(...args.scale);
         }
 
-        this.entity._app.fire("app:entity:create", this);
+        this.entity.getApplication().fire("app:entity:create", this);
     }
 
     public destroy() {
-        this.entity._app.fire("app:entity:create", this.entity.getGuid());
+        this.entity.getApplication().fire("app:entity:create", this.entity.getGuid());
         this.entity.destroy();
     }
 }
