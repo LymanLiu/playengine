@@ -14,9 +14,9 @@ export interface GizmoMeshInstancesMap {
 
 export default class GizmoTransform extends Gizmo {
     public root: pc.Entity;
-    public translate: GizmoTranslate;
-    public planes: PlanesMap;
     public targets: Entity[];
+    public planes: PlanesMap;
+    public translate: GizmoTranslate;
 
     constructor(app: Application) {
         super(app);

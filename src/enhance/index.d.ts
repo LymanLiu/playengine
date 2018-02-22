@@ -44,6 +44,10 @@ declare namespace pc {
         toJSON(options?: ToJSONOptions): object;
     }
 
+    interface BasicMaterial {
+        _color: number[];
+    }
+
     interface StandardMaterial extends EnhanceAsset {
         [prop: string]: any;
     }

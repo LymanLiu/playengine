@@ -75,7 +75,6 @@ export default class GizmoTranslate {
     }
 
     private setup(type: string, gizmos: GizmoMeshInstancesMap) {
-        /* tslint:disable-next-line */
         for (let name in gizmos) {
             gizmos[name].forEach((mi: pc.MeshInstance) => {
                 mi.node.name = name;
@@ -98,6 +97,7 @@ export default class GizmoTranslate {
         let node = new pc.GraphNode();
         let mesh = pc.createLines(this.app.$.graphicsDevice, positions);
         let material = new pc.BasicMaterial();
+        material._color = color;
         material.depthTest = false;
         material.depthWrite = false;
         material.color = new pc.Color(color);
@@ -116,6 +116,7 @@ export default class GizmoTranslate {
         node.setLocalPosition(...position);
         node.setLocalEulerAngles(...rotation);
         node.setLocalScale(...scale);
+        material._color = color;
         material.depthTest = false;
         material.depthWrite = false;
         material.color = new pc.Color(color);
@@ -150,6 +151,7 @@ export default class GizmoTranslate {
         node.setLocalPosition(...position);
         node.setLocalEulerAngles(...rotation);
         node.setLocalScale(...scale);
+        material._color = color;
         material.depthTest = false;
         material.depthWrite = false;
         material.color = new pc.Color(color);

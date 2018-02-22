@@ -20,6 +20,18 @@ export class GizmoTransformControls extends ScriptType {
         this.onEnable();
     }
 
+    public update() {
+        let handlerGizmos = this.App.gizmos.transform.translate.handlerGizmos;
+        for (let name in handlerGizmos) {
+            handlerGizmos[name].forEach((mi: pc.MeshInstance) => {
+                let material = mi.material as pc.BasicMaterial;
+                let color = this.hoverAxis === name ? [1, 1, 1, 1] : material._color;
+                material.color.set(color[0], color[1], color[2], color[3]);
+                material.update();
+            });
+        }
+    }
+
     private onEnable() {
         this.app.mouse.on(pc.EVENT_MOUSEDOWN, this.onMouseDown, this, 9);
         this.app.mouse.on(pc.EVENT_MOUSEMOVE, this.onMouseMove, this, 9);
