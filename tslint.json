@@ -13,6 +13,7 @@
     "prefer-const": false,
     "no-console": false,
     "variable-name": false,
+    "curly": false,
     "quotemark": [
       true,
       "double",
