@@ -2,9 +2,12 @@ declare namespace pc {
 
     type EventListener = (...args: any[]) => void;
 
-    /* tslint:disable-next-line */
-    interface events {
-        on(name: string, callback: pc.EventListener, scope?: any, priority?: number): void;
+    namespace events {
+        function on(name: string, callback: pc.EventListener, scope?: any, priority?: number): void;
+        function fire2(
+            name: string,
+            arg1?: any, arg2?: any, arg3?: any, arg4?: any, arg5?: any, arg6?: any, arg7?: any, arg8?: any
+        ): void;
     }
 
     interface Mouse {
@@ -13,6 +16,14 @@ declare namespace pc {
 
     interface TouchDevice {
         on(name: string, callback: pc.EventListener, scope?: any, priority?: number): void;
+    }
+
+    interface MouseEvent {
+        stopPropagation(): void;
+    }
+
+    interface TouchEvent {
+        stopPropagation(): void;
     }
 
     interface MeshInstanceIntersection {
@@ -54,6 +65,10 @@ declare namespace pc {
 
     interface MeshInstance {
         intersectsRay(worldRay: pc.Ray, intersects?: MeshInstanceIntersection[]): MeshInstanceIntersection[];
+    }
+
+    interface Entity {
+        getApplication(): pc.Application;
     }
 
     function createLines(device: pc.GraphicsDevice, positions: number[]): pc.Mesh;

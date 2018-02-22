@@ -32,21 +32,28 @@ export class GizmoTransformControls extends ScriptType {
         this.app.mouse.off(pc.EVENT_MOUSEUP, this.onMouseUp, this);
     }
 
-    private onMouseDown() {
+    private onMouseDown(event: pc.MouseEvent) {
         if (!this.hoverAxis) return;
+
+        event.stopPropagation();
 
         this.startPoint.copy(this.hoverPoint);
         this.position.copy(this.App.gizmos.transform.root.getPosition());
-        this.App.selection.camera.entity.script.enabled = false;
         this.App.gizmos.transform.targets.forEach((target: Entity) => {
             target._gizmoTransformStart = Array.from(target.entity.getPosition().data);
         });
         this.isDragging = true;
     }
 
-    private onMouseUp() {
-        this.App.selection.camera.entity.script.enabled = true;
+    private onMouseUp(event: pc.MouseEvent) {
+        if (!this.isDragging) return;
+
+        event.stopPropagation();
+
         this.App.gizmos.transform.updatePlanes();
+        this.App.gizmos.transform.targets.forEach((target: Entity) => {
+            delete target._gizmoTransformStart;
+        });
         this.isDragging = false;
     }
 

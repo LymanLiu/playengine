@@ -57,10 +57,12 @@ export class Application {
 
         if (this.$.mouse) {
             pc.events.attach(this.$.mouse);
+            this.$.mouse.fire = pc.events.fire2;
         }
 
         if (this.$.touch) {
             pc.events.attach(this.$.touch);
+            this.$.touch.fire = pc.events.fire2;
         }
 
         if (this.$.keyboard) {
