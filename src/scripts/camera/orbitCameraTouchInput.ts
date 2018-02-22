@@ -94,9 +94,19 @@ class OrbitCameraTouchInput extends ScriptType {
             this.calcMidPoint(touches[0], touches[1], this.lastPinchMidPoint);
         }
 
-        setTimeout(() => {
-            this.app.fire("app:camera.moveend");
-        }, 250);
+        switch (event.event.type) {
+            case "touchstart":
+                this.app.fire("app:camera:movestart");
+                break;
+
+            case "touchend":
+            case "touchcancel":
+                setTimeout(() => {
+                    this.app.fire("app:camera:moveend");
+                }, 250);
+                break;
+        }
+
     }
 
     private pan(midPoint: pc.Vec2) {
@@ -130,7 +140,7 @@ class OrbitCameraTouchInput extends ScriptType {
             this.orbitCamera.yaw -= (touch.x - this.lastTouchPoint.x) * this.orbitSensitivity;
             this.lastTouchPoint.set(touch.x, touch.y);
 
-            this.app.fire("app:camera:movestart");
+            this.app.fire("app:camera:move");
 
         } else if (touches.length === 2) {
             // Calculate the difference in pinch distance since the last event
@@ -147,7 +157,7 @@ class OrbitCameraTouchInput extends ScriptType {
             if (Math.abs(diffInPinchDistance) <= this.pinchSensitivity) {
                 this.pan(pinchMidPoint);
 
-                this.app.fire("app:camera:movestart");
+                this.app.fire("app:camera:move");
             }
 
             this.lastPinchMidPoint.copy(pinchMidPoint);

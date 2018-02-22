@@ -100,6 +100,8 @@ class OrbitCameraMouseInput extends ScriptType {
                 this.panButtonDown = true;
                 break;
         }
+
+        this.app.fire("app:camera:movestart");
     }
 
     private onMouseUp(event: pc.MouseEvent) {
@@ -126,19 +128,20 @@ class OrbitCameraMouseInput extends ScriptType {
             this.orbitCamera.pitch -= event.dy * this.orbitSensitivity;
             this.orbitCamera.yaw -= event.dx * this.orbitSensitivity;
 
-            this.app.fire("app:camera:movestart");
+            this.app.fire("app:camera:move");
         } else if (this.panButtonDown) {
             this.pan(event);
 
-            this.app.fire("app:camera:movestart");
+            this.app.fire("app:camera:move");
         }
 
         this.lastPoint.set(event.x, event.y);
     }
 
     private onMouseWheel(event: pc.MouseEvent) {
-        this.orbitCamera.distance -= event.wheel * this.distanceSensitivity * (this.orbitCamera.distance * 0.1);
         event.event.preventDefault();
+        this.orbitCamera.distance -= event.wheel * this.distanceSensitivity * (this.orbitCamera.distance * 0.1);
+        this.app.fire("app:camera:move");
     }
 
     private _onMouseOut() {
