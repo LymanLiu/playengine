@@ -111,6 +111,22 @@ export class GizmoTransformControls extends ScriptType {
                         this.vecB.z + this.offset.z
                     );
                 });
+            } else if (this.transform.mode === "scale") {
+                this.offset.sub2(this.hitPoint, this.startPoint);
+
+                if (this.hoverAxis.search("X") === -1) this.offset.x = 0;
+                if (this.hoverAxis.search("Y") === -1) this.offset.y = 0;
+                if (this.hoverAxis.search("Z") === -1) this.offset.z = 0;
+
+                this.transform.targets.forEach((target: Entity) => {
+                    this.matA.set(target._gizmoTransformStart);
+                    this.matA.getScale(this.vecA);
+                    target.entity.setLocalScale(
+                        this.vecA.x * (1 + this.offset.x / this.vecA.x),
+                        this.vecA.y * (1 + this.offset.y / this.vecA.y),
+                        this.vecA.z * (1 + this.offset.z / this.vecA.z)
+                    );
+                });
             } else if (this.transform.mode === "rotate") {
                 this.transform.targets.forEach((target: Entity) => {
                     let worldPosition = target.entity.getPosition();

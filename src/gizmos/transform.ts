@@ -3,6 +3,7 @@ import { Entity } from "../entities/entity";
 import GizmoTransformControls from "../scripts/gizmo/transform";
 import GizmoTranslate from "./translate";
 import GizmoRotate from "./rotate";
+import GizmoScale from "./scale";
 import Gizmo from "./gizmo";
 
 interface PlanesMap {
@@ -19,8 +20,9 @@ export default class GizmoTransform extends Gizmo {
     public planes: PlanesMap;
     public translate: GizmoTranslate;
     public rotate: GizmoRotate;
+    public scale: GizmoScale;
 
-    private _mode: string = "rotate";
+    private _mode: string = "scale";
 
     constructor(app: Application) {
         super(app);
@@ -34,6 +36,7 @@ export default class GizmoTransform extends Gizmo {
         };
         this.translate = new GizmoTranslate(app);
         this.rotate = new GizmoRotate(app);
+        this.scale = new GizmoScale(app);
         this.targets = [];
         this.root = new pc.Entity();
         this.root.enabled = false;
@@ -41,6 +44,7 @@ export default class GizmoTransform extends Gizmo {
         this.root.script.create(controls.__name);
         this.root.addChild(this.translate.root);
         this.root.addChild(this.rotate.root);
+        this.root.addChild(this.scale.root);
         this.app.$.root.addChild(this.root);
 
         this.mode = this._mode;
@@ -73,6 +77,8 @@ export default class GizmoTransform extends Gizmo {
                 return this.translate;
             case "rotate":
                 return this.rotate;
+            case "scale":
+                return this.scale;
         }
     }
 
@@ -102,6 +108,7 @@ export default class GizmoTransform extends Gizmo {
     public getPlaneByAxis(axis: string) {
         switch (this._mode) {
             case "translate":
+            case "scale":
                 switch (axis) {
                     case "X":
                         return this.planes.XY;
