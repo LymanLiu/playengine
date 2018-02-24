@@ -76,4 +76,5 @@ declare namespace pc {
     }
 
     function createLines(device: pc.GraphicsDevice, positions: number[]): pc.Mesh;
+    function createCircle(device: pc.GraphicsDevice, radius?: number, segments?: number): pc.Mesh;
 }
