@@ -67,16 +67,9 @@ Promise.all([
         app.$.root.addChild(camera.entity);
         app.$.root.addChild(playbot.entity);
         app.$.root.addChild(light.entity);
-
-        app.$.scene.skyboxIntensity = 1;
-        app.$.scene.skyboxMip = 1;
-        app.$.scene.abmientLight = new pc.Color(0.2, 0.2, 0.2);
-        app.$.scene.gammaCorrection = 2;
-        app.$.scene.toneMapping = 3;
         app.$.scene.setSkybox(res[1].resources);
 
         app.selection.attach(camera);
-
         camera.entity.script.orbitCamera.focus(playbot.entity);
     });
 });

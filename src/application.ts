@@ -33,11 +33,16 @@ export class Application {
 
     constructor(canvas: HTMLCanvasElement, options: ApplicationOptions = {}) {
         this.$ = new pc.Application(canvas, options);
+        this.$.root.name = "Application Root";
         this.$.graphicsDevice.maxPixelRatio = window.devicePixelRatio;
         this.$.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
         this.$.setCanvasResolution(pc.RESOLUTION_AUTO);
         this.$.loader.getHandler(pc.ASSET_TEXTURE).crossOrigin = true;
-        this.$.root.name = "Application Root";
+        this.$.scene.skyboxIntensity = 1;
+        this.$.scene.skyboxMip = 2;
+        this.$.scene.ambientLight = new pc.Color(0.2, 0.2, 0.2, 1);
+        this.$.scene.gammaCorrection = pc.GAMMA_SRGB;
+        this.$.scene.toneMapping = pc.TONEMAP_ACES;
         this.$.start();
 
         this.entities = new EntityManager(this);

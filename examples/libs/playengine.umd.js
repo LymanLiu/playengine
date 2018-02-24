@@ -1021,7 +1021,7 @@ var GizmoTransformControls = /** @class */ (function (_super) {
     GizmoTransformControls.prototype.onMouseMove = function (event) {
         var _this = this;
         var ray = this.App.selection.prepareRay(event.x, event.y);
-        var intersects = ray.intersectMeshInstances(this.transform.modeInstance.pickerMeshInstances);
+        var intersects = ray.intersectsMeshInstances(this.transform.modeInstance.pickerMeshInstances);
         if (this.isDragging) {
             this.transform
                 .getPlaneByAxis(this.hoverAxis)
@@ -1910,12 +1910,12 @@ function enhance$1() {
 //# sourceMappingURL=procedural.js.map
 
 function enhance$2() {
-    pc.Ray.prototype.intersectTriangle = (function () {
+    pc.Ray.prototype.intersectsTriangle = (function () {
         var diff = new pc.Vec3();
         var edge1 = new pc.Vec3();
         var edge2 = new pc.Vec3();
         var normal = new pc.Vec3();
-        return function intersectTriangle(a, b, c, backfaceCulling, res) {
+        return function intersectsTriangle(a, b, c, backfaceCulling, res) {
             res = (res === undefined) ? new pc.Vec3() : res;
             edge1.sub2(b, a);
             edge2.sub2(c, a);
@@ -1954,7 +1954,7 @@ function enhance$2() {
             return res.copy(this.direction).scale(QdN / DdN).add(this.origin);
         };
     })();
-    pc.Ray.prototype.intersectMeshInstances = function (meshInstances) {
+    pc.Ray.prototype.intersectsMeshInstances = function (meshInstances) {
         var i = 0;
         var intersects = [];
         for (i = 0; i < meshInstances.length; i++) {
@@ -1988,10 +1988,10 @@ function enhance$3() {
                 meshInstance.material.cull === pc.CULLFACE_FRONTANDBACK);
             var intersect;
             if (meshInstance.skinInstance) {
-                intersect = worldRay.intersectTriangle(a, b, c, backfaceCulling, point);
+                intersect = worldRay.intersectsTriangle(a, b, c, backfaceCulling, point);
             }
             else {
-                intersect = localRay.intersectTriangle(a, b, c, backfaceCulling, point);
+                intersect = localRay.intersectsTriangle(a, b, c, backfaceCulling, point);
             }
             if (intersect === null) {
                 return null;
@@ -2311,11 +2311,16 @@ var Application = /** @class */ (function () {
         this.isEnhanced = false;
         this.isAutoResized = false;
         this.$ = new pc.Application(canvas, options);
+        this.$.root.name = "Application Root";
         this.$.graphicsDevice.maxPixelRatio = window.devicePixelRatio;
         this.$.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
         this.$.setCanvasResolution(pc.RESOLUTION_AUTO);
         this.$.loader.getHandler(pc.ASSET_TEXTURE).crossOrigin = true;
-        this.$.root.name = "Application Root";
+        this.$.scene.skyboxIntensity = 1;
+        this.$.scene.skyboxMip = 2;
+        this.$.scene.ambientLight = new pc.Color(0.2, 0.2, 0.2, 1);
+        this.$.scene.gammaCorrection = pc.GAMMA_SRGB;
+        this.$.scene.toneMapping = pc.TONEMAP_ACES;
         this.$.start();
         this.entities = new EntityManager(this);
         this.textures = new TextureManager(this);
@@ -2420,7 +2425,7 @@ var Picker = /** @class */ (function (_super) {
         }
         return this.App.selection
             .prepareRay(x, y)
-            .intersectMeshInstances(target.model.meshInstances);
+            .intersectsMeshInstances(target.model.meshInstances);
     };
     Picker.__name = "picker";
     return Picker;
@@ -2686,7 +2691,7 @@ var OrbitCameraMouseInput = /** @class */ (function (_super) {
         this.lookButtonDown = false;
         this.panButtonDown = false;
         this.app.mouse.on(pc.EVENT_MOUSEDOWN, this.onMouseDown, this);
-        this.app.mouse.on(pc.EVENT_MOUSEUP, this.onMouseUp, this);
+        this.app.mouse.on(pc.EVENT_MOUSEUP, this.onMouseUp, this, -9);
         this.app.mouse.on(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
         this.app.mouse.on(pc.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
         window.addEventListener("mouseout", this.onMouseOut, false);
@@ -2728,7 +2733,6 @@ var OrbitCameraMouseInput = /** @class */ (function (_super) {
         this.app.fire("app:camera:movestart");
     };
     OrbitCameraMouseInput.prototype.onMouseUp = function (event) {
-        var _this = this;
         event.event.preventDefault();
         event.event.stopPropagation();
         switch (event.button) {
@@ -2740,9 +2744,7 @@ var OrbitCameraMouseInput = /** @class */ (function (_super) {
                 this.panButtonDown = false;
                 break;
         }
-        setTimeout(function () {
-            _this.app.fire("app:camera:moveend");
-        }, 250);
+        this.app.fire("app:camera:moveend");
     };
     OrbitCameraMouseInput.prototype.onMouseMove = function (event) {
         if (this.lookButtonDown) {
@@ -2832,7 +2834,6 @@ var OrbitCameraTouchInput = /** @class */ (function (_super) {
         result.y += pointA.y;
     };
     OrbitCameraTouchInput.prototype.onTouchStartEndCancel = function (event) {
-        var _this = this;
         event.event.preventDefault();
         // We only care about the first touch for camera rotation. As the user touches the screen,
         // we stored the current touch position
@@ -2851,9 +2852,7 @@ var OrbitCameraTouchInput = /** @class */ (function (_super) {
                 break;
             case "touchend":
             case "touchcancel":
-                setTimeout(function () {
-                    _this.app.fire("app:camera:moveend");
-                }, 250);
+                this.app.fire("app:camera:moveend");
                 break;
         }
     };
