@@ -86,7 +86,7 @@ export class GizmoTransformControls extends ScriptType {
 
     private onMouseMove(event: pc.MouseEvent) {
         let ray = this.App.selection.prepareRay(event.x, event.y);
-        let intersects = ray.intersectMeshInstances(this.transform.modeInstance.pickerMeshInstances);
+        let intersects = ray.intersectsMeshInstances(this.transform.modeInstance.pickerMeshInstances);
 
         if (this.isDragging) {
             this.transform

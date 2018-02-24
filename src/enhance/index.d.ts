@@ -56,7 +56,7 @@ declare namespace pc {
     interface BoundingBox extends EnhanceAsset { }
 
     interface Ray {
-        intersectTriangle(
+        intersectsTriangle(
             a: pc.Vec3,
             b: pc.Vec3,
             c: pc.Vec3,
@@ -64,7 +64,7 @@ declare namespace pc {
             res?: pc.Vec3
         ): pc.Vec3;
 
-        intersectMeshInstances(meshInstances: pc.MeshInstance[]): MeshInstanceIntersection[];
+        intersectsMeshInstances(meshInstances: pc.MeshInstance[]): MeshInstanceIntersection[];
     }
 
     interface MeshInstance {

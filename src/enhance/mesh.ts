@@ -44,9 +44,9 @@ export default function enhance() {
             let intersect;
 
             if (meshInstance.skinInstance) {
-                intersect = worldRay.intersectTriangle(a, b, c, backfaceCulling, point);
+                intersect = worldRay.intersectsTriangle(a, b, c, backfaceCulling, point);
             } else {
-                intersect = localRay.intersectTriangle(a, b, c, backfaceCulling, point);
+                intersect = localRay.intersectsTriangle(a, b, c, backfaceCulling, point);
             }
 
             if (intersect === null) {

@@ -1,13 +1,13 @@
 import { MeshInstanceIntersection } from "./mesh";
 
 export default function enhance() {
-    pc.Ray.prototype.intersectTriangle = (() => {
+    pc.Ray.prototype.intersectsTriangle = (() => {
         let diff = new pc.Vec3();
         let edge1 = new pc.Vec3();
         let edge2 = new pc.Vec3();
         let normal = new pc.Vec3();
 
-        return function intersectTriangle(
+        return function intersectsTriangle(
             a: pc.Vec3,
             b: pc.Vec3,
             c: pc.Vec3,
@@ -61,7 +61,7 @@ export default function enhance() {
         };
     })();
 
-    pc.Ray.prototype.intersectMeshInstances = function(meshInstances: pc.MeshInstance[]) {
+    pc.Ray.prototype.intersectsMeshInstances = function(meshInstances: pc.MeshInstance[]) {
         let i = 0;
         let intersects = [] as MeshInstanceIntersection[];
 

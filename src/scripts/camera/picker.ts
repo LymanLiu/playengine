@@ -42,7 +42,7 @@ class Picker extends ScriptType implements PickerBehavior {
 
         return this.App.selection
             .prepareRay(x, y)
-            .intersectMeshInstances(target.model.meshInstances);
+            .intersectsMeshInstances(target.model.meshInstances);
     }
 }
 
