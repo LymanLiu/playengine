@@ -1,5 +1,6 @@
 import { Application } from "../application";
 import { Entity } from "../entities/entity";
+import GizmoTransformInstance from "./transformInstance";
 import GizmoTransformControls from "../scripts/gizmo/transform";
 import GizmoTranslate from "./translate";
 import GizmoRotate from "./rotate";
@@ -22,7 +23,7 @@ export default class GizmoTransform extends Gizmo {
     public rotate: GizmoRotate;
     public scale: GizmoScale;
 
-    private _mode: string = "scale";
+    private _mode: string = "translate";
 
     constructor(app: Application) {
         super(app);
@@ -59,6 +60,7 @@ export default class GizmoTransform extends Gizmo {
 
         this.translate.root.enabled = false;
         this.rotate.root.enabled = false;
+        this.scale.root.enabled = false;
 
         switch (value) {
             case "translate":
@@ -67,11 +69,14 @@ export default class GizmoTransform extends Gizmo {
             case "rotate":
                 this.rotate.root.enabled = true;
                 break;
+            case "scale":
+                this.scale.root.enabled = true;
+                break;
         }
 
     }
 
-    get modeInstance() {
+    get modeInstance(): GizmoTransformInstance {
         switch (this._mode) {
             case "translate":
                 return this.translate;

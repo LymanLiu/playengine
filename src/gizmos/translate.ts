@@ -1,27 +1,10 @@
 import { Application } from "../application";
-import { GizmoMeshInstancesMap } from "./transform";
+import GizmoTransformInstance from "./transformInstance";
 
-export default class GizmoTranslate {
-    public root: pc.Entity;
-
-    private app: Application;
-    private node: pc.GraphNode;
-    private model: pc.Model;
-    private handlerGizmos: GizmoMeshInstancesMap;
-    private handlerMeshInstances: pc.MeshInstance[];
-    private pickerGizmos: GizmoMeshInstancesMap;
-    private pickerMeshInstances: pc.MeshInstance[];
+export default class GizmoTranslate extends GizmoTransformInstance {
 
     constructor(app: Application) {
-        this.app = app;
-
-        this.root = new pc.Entity();
-        this.root.addComponent("model");
-        this.node = new pc.GraphNode();
-        this.model = new pc.Model();
-        this.model.graph = this.node;
-        this.handlerMeshInstances = [];
-        this.pickerMeshInstances = [];
+        super(app);
 
         this.handlerGizmos = {
             X: [
@@ -68,29 +51,10 @@ export default class GizmoTranslate {
             ]
         };
 
-        this.setup("handler", this.handlerGizmos);
-        this.setup("picker", this.pickerGizmos);
+        this.setupMeshInstances("handler", this.handlerGizmos);
+        this.setupMeshInstances("picker", this.pickerGizmos);
 
         this.root.model.model = this.model;
-    }
-
-    private setup(type: string, gizmos: GizmoMeshInstancesMap) {
-        for (let name in gizmos) {
-            gizmos[name].forEach((mi: pc.MeshInstance) => {
-                mi.node.name = name;
-                this.node.addChild(mi.node);
-                this.model.meshInstances.push(mi);
-
-                switch (type) {
-                    case "handler":
-                        this.handlerMeshInstances.push(mi);
-                        break;
-                    case "picker":
-                        this.pickerMeshInstances.push(mi);
-                        break;
-                }
-            });
-        }
     }
 
     private createLine(positions: number[], color: number[]) {
