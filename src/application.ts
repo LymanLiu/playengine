@@ -37,6 +37,7 @@ export class Application {
         this.$.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
         this.$.setCanvasResolution(pc.RESOLUTION_AUTO);
         this.$.loader.getHandler(pc.ASSET_TEXTURE).crossOrigin = true;
+        this.$.root.name = "Application Root";
         this.$.start();
 
         this.entities = new EntityManager(this);
