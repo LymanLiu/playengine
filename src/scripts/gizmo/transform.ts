@@ -121,10 +121,11 @@ export class GizmoTransformControls extends ScriptType {
                 this.transform.targets.forEach((target: Entity) => {
                     this.matA.set(target._gizmoTransformStart);
                     this.matA.getScale(this.vecA);
+                    this.matA.invert().getScale(this.vecB);
                     target.entity.setLocalScale(
-                        this.vecA.x * (1 + this.offset.x / this.vecA.x),
-                        this.vecA.y * (1 + this.offset.y / this.vecA.y),
-                        this.vecA.z * (1 + this.offset.z / this.vecA.z)
+                        this.vecA.x * (1 + this.offset.x / this.vecB.x),
+                        this.vecA.y * (1 + this.offset.y / this.vecB.y),
+                        this.vecA.z * (1 + this.offset.z / this.vecB.z)
                     );
                 });
             } else if (this.transform.mode === "rotate") {
