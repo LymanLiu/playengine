@@ -12,7 +12,12 @@ export class Entity {
     public uid: string;
     public entity: pc.Entity;
     public type: string;
-    public _gizmoTransformStart: number[];
+    public _gizmoTransformStart: [
+        number, number, number, number,
+        number, number, number, number,
+        number, number, number, number,
+        number, number, number, number
+    ];
 
     constructor(args: EntityOptions = {}) {
         this.entity = new pc.Entity();
