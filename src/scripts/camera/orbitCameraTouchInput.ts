@@ -101,9 +101,7 @@ class OrbitCameraTouchInput extends ScriptType {
 
             case "touchend":
             case "touchcancel":
-                setTimeout(() => {
-                    this.app.fire("app:camera:moveend");
-                }, 250);
+                this.app.fire("app:camera:moveend");
                 break;
         }
 

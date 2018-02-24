@@ -50,7 +50,7 @@ class OrbitCameraMouseInput extends ScriptType {
         this.panButtonDown = false;
 
         this.app.mouse.on(pc.EVENT_MOUSEDOWN, this.onMouseDown, this);
-        this.app.mouse.on(pc.EVENT_MOUSEUP, this.onMouseUp, this);
+        this.app.mouse.on(pc.EVENT_MOUSEUP, this.onMouseUp, this, -9);
         this.app.mouse.on(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
         this.app.mouse.on(pc.EVENT_MOUSEWHEEL, this.onMouseWheel, this);
 
@@ -118,9 +118,7 @@ class OrbitCameraMouseInput extends ScriptType {
                 break;
         }
 
-        setTimeout(() => {
-            this.app.fire("app:camera:moveend");
-        }, 250);
+        this.app.fire("app:camera:moveend");
     }
 
     private onMouseMove(event: pc.MouseEvent) {
