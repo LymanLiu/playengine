@@ -168,6 +168,7 @@ var ENTITY_LIGHT = "light";
 var ENTITY_MODEL = "model";
 var GIZMO_AABB = "aabb";
 var GIZMO_GRID = "grid";
+var GIZMO_TRANSFORM = "transform";
 var constants = {
     ENTITY_BASE: ENTITY_BASE,
     ENTITY_CAMERA: ENTITY_CAMERA,
@@ -175,6 +176,7 @@ var constants = {
     ENTITY_MODEL: ENTITY_MODEL,
     GIZMO_AABB: GIZMO_AABB,
     GIZMO_GRID: GIZMO_GRID,
+    GIZMO_TRANSFORM: GIZMO_TRANSFORM,
     MATERIAL_OBJECT_FIELDS: MATERIAL_OBJECT_FIELDS,
     MATERIAL_OBJECT_FIELDS2: MATERIAL_OBJECT_FIELDS2,
     MATERIAL_ARRAY_FIELDS: MATERIAL_ARRAY_FIELDS,
@@ -914,37 +916,6 @@ var GizmoAabb = /** @class */ (function (_super) {
     return GizmoAabb;
 }(Gizmo));
 
-var GizmoManager = /** @class */ (function () {
-    function GizmoManager(app) {
-        this.app = app;
-    }
-    GizmoManager.prototype.create = function (type) {
-        switch (type) {
-            case GIZMO_GRID:
-                this.grid = new GizmoGrid(this.app);
-                break;
-            case GIZMO_AABB:
-                this.aabb = new GizmoAabb(this.app);
-                break;
-        }
-        return this;
-    };
-    GizmoManager.prototype.remove = function (type) {
-        switch (type) {
-            case GIZMO_GRID:
-                this.grid.destroy();
-                this.grid = null;
-                break;
-            case GIZMO_AABB:
-                this.aabb.destroy();
-                this.aabb = null;
-                break;
-        }
-        return this;
-    };
-    return GizmoManager;
-}());
-
 var Entity = /** @class */ (function () {
     function Entity(args) {
         if (args === void 0) { args = {}; }
@@ -965,14 +936,613 @@ var Entity = /** @class */ (function () {
         if (args.scale) {
             (_c = this.entity).setLocalScale.apply(_c, args.scale);
         }
-        this.entity._app.fire("app:entity:create", this);
+        this.entity.getApplication().fire("app:entity:create", this);
         var _a, _b, _c;
     }
     Entity.prototype.destroy = function () {
-        this.entity._app.fire("app:entity:create", this.entity.getGuid());
+        this.entity.getApplication().fire("app:entity:create", this.entity.getGuid());
         this.entity.destroy();
     };
     return Entity;
+}());
+
+var GizmoTransformControls = /** @class */ (function (_super) {
+    __extends(GizmoTransformControls, _super);
+    function GizmoTransformControls() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.hoverAxis = null;
+        _this.hoverPoint = new pc.Vec3();
+        _this.startPoint = new pc.Vec3();
+        _this.hitPoint = new pc.Vec3();
+        _this.position = new pc.Vec3();
+        _this.offset = new pc.Vec3();
+        _this.vecA = new pc.Vec3();
+        _this.vecB = new pc.Vec3();
+        _this.vecC = new pc.Vec3();
+        _this.vecD = new pc.Vec3();
+        _this.matA = new pc.Mat4();
+        _this.quatA = new pc.Quat();
+        _this.quatB = new pc.Quat();
+        _this.isDragging = false;
+        return _this;
+    }
+    GizmoTransformControls.prototype.initialize = function () {
+        this.transform = this.App.gizmos.transform;
+        this.on("enable", this.onEnable);
+        this.on("disable", this.onDisable);
+        this.onEnable();
+    };
+    GizmoTransformControls.prototype.update = function () {
+        var _this = this;
+        var handlerGizmos = this.transform.modeInstance.handlerGizmos;
+        var _loop_1 = function (name) {
+            handlerGizmos[name].forEach(function (mi) {
+                var material = mi.material;
+                var color = _this.hoverAxis === name ? [1, 1, 1, 1] : material._color;
+                material.color.set(color[0], color[1], color[2], color[3]);
+                material.update();
+            });
+        };
+        for (var name in handlerGizmos) {
+            _loop_1(name);
+        }
+    };
+    GizmoTransformControls.prototype.onEnable = function () {
+        this.app.mouse.on(pc.EVENT_MOUSEDOWN, this.onMouseDown, this, 9);
+        this.app.mouse.on(pc.EVENT_MOUSEMOVE, this.onMouseMove, this, 9);
+        this.app.mouse.on(pc.EVENT_MOUSEUP, this.onMouseUp, this, 9);
+    };
+    GizmoTransformControls.prototype.onDisable = function () {
+        this.app.mouse.off(pc.EVENT_MOUSEDOWN, this.onMouseDown, this);
+        this.app.mouse.off(pc.EVENT_MOUSEMOVE, this.onMouseMove, this);
+        this.app.mouse.off(pc.EVENT_MOUSEUP, this.onMouseUp, this);
+    };
+    GizmoTransformControls.prototype.onMouseDown = function (event) {
+        if (!this.hoverAxis)
+            return;
+        event.stopPropagation();
+        this.startPoint.copy(this.hoverPoint);
+        this.position.copy(this.transform.root.getPosition());
+        this.transform.targets.forEach(function (target) {
+            target._gizmoTransformStart = Array.from(target.entity.getWorldTransform().data);
+        });
+        this.isDragging = true;
+    };
+    GizmoTransformControls.prototype.onMouseUp = function (event) {
+        if (!this.isDragging)
+            return;
+        event.stopPropagation();
+        this.transform.updatePlanes();
+        this.transform.targets.forEach(function (target) {
+            delete target._gizmoTransformStart;
+        });
+        this.isDragging = false;
+    };
+    GizmoTransformControls.prototype.onMouseMove = function (event) {
+        var _this = this;
+        var ray = this.App.selection.prepareRay(event.x, event.y);
+        var intersects = ray.intersectMeshInstances(this.transform.modeInstance.pickerMeshInstances);
+        if (this.isDragging) {
+            this.transform
+                .getPlaneByAxis(this.hoverAxis)
+                .intersectsRay(ray, this.hitPoint);
+            if (this.transform.mode === "translate") {
+                this.offset.sub2(this.hitPoint, this.startPoint);
+                if (this.hoverAxis.search("X") === -1)
+                    this.offset.x = 0;
+                if (this.hoverAxis.search("Y") === -1)
+                    this.offset.y = 0;
+                if (this.hoverAxis.search("Z") === -1)
+                    this.offset.z = 0;
+                this.vecA.add2(this.position, this.offset);
+                this.transform.root.setPosition(this.vecA);
+                this.transform.targets.forEach(function (target) {
+                    _this.matA.set(target._gizmoTransformStart);
+                    _this.matA.getTranslation(_this.vecB);
+                    target.entity.setPosition(_this.vecB.x + _this.offset.x, _this.vecB.y + _this.offset.y, _this.vecB.z + _this.offset.z);
+                });
+            }
+            else if (this.transform.mode === "scale") {
+                this.offset.sub2(this.hitPoint, this.startPoint);
+                if (this.hoverAxis.search("X") === -1)
+                    this.offset.x = 0;
+                if (this.hoverAxis.search("Y") === -1)
+                    this.offset.y = 0;
+                if (this.hoverAxis.search("Z") === -1)
+                    this.offset.z = 0;
+                this.transform.targets.forEach(function (target) {
+                    _this.matA.set(target._gizmoTransformStart);
+                    _this.matA.getScale(_this.vecA);
+                    _this.matA.invert().getScale(_this.vecB);
+                    target.entity.setLocalScale(_this.vecA.x * (1 + _this.offset.x / _this.vecB.x), _this.vecA.y * (1 + _this.offset.y / _this.vecB.y), _this.vecA.z * (1 + _this.offset.z / _this.vecB.z));
+                });
+            }
+            else if (this.transform.mode === "rotate") {
+                this.transform.targets.forEach(function (target) {
+                    var worldPosition = target.entity.getPosition();
+                    _this.matA.set(target._gizmoTransformStart);
+                    _this.quatA.setFromMat4(_this.matA);
+                    _this.vecA.copy(_this.startPoint).sub(worldPosition).normalize();
+                    _this.vecB.copy(_this.hitPoint).sub(worldPosition).normalize();
+                    // start
+                    _this.vecC.set(Math.atan2(_this.vecA.z, _this.vecA.y) * pc.math.RAD_TO_DEG, Math.atan2(_this.vecA.x, _this.vecA.z) * pc.math.RAD_TO_DEG, Math.atan2(_this.vecA.y, _this.vecA.x) * pc.math.RAD_TO_DEG);
+                    // offset
+                    _this.vecD.set(Math.atan2(_this.vecB.z, _this.vecB.y) * pc.math.RAD_TO_DEG, Math.atan2(_this.vecB.x, _this.vecB.z) * pc.math.RAD_TO_DEG, Math.atan2(_this.vecB.y, _this.vecB.x) * pc.math.RAD_TO_DEG);
+                    switch (_this.hoverAxis) {
+                        case "X":
+                            _this.quatB.setFromAxisAngle(pc.Vec3.RIGHT, _this.vecD.x - _this.vecC.x);
+                            break;
+                        case "Y":
+                            _this.quatB.setFromAxisAngle(pc.Vec3.UP, _this.vecD.y - _this.vecC.y);
+                            break;
+                        case "Z":
+                            _this.quatB.setFromAxisAngle(pc.Vec3.BACK, _this.vecD.z - _this.vecC.z);
+                            break;
+                    }
+                    _this.quatB.mul(_this.quatA);
+                    target.entity.setRotation(_this.quatB);
+                });
+            }
+            return;
+        }
+        else if (!intersects) {
+            this.hoverAxis = null;
+            return;
+        }
+        var result = intersects[0];
+        this.hoverAxis = result.meshInstance.node.name;
+        this.transform.getPlaneByAxis(this.hoverAxis).intersectsRay(ray, this.hoverPoint);
+    };
+    GizmoTransformControls.__name = "gizmoTransformControls";
+    return GizmoTransformControls;
+}(ScriptType));
+var GizmoTransformControls$1 = createScript(GizmoTransformControls);
+
+var GizmoTransformInstance = /** @class */ (function () {
+    function GizmoTransformInstance(app) {
+        this.app = app;
+        this.root = new pc.Entity();
+        this.root.addComponent("model");
+        this.node = new pc.GraphNode();
+        this.model = new pc.Model();
+        this.model.graph = this.node;
+        this.handlerMeshInstances = [];
+        this.pickerMeshInstances = [];
+    }
+    GizmoTransformInstance.prototype.setupMeshInstances = function (type, gizmos) {
+        var _this = this;
+        var _loop_1 = function (name) {
+            gizmos[name].forEach(function (mi) {
+                mi.node.name = name;
+                _this.node.addChild(mi.node);
+                _this.model.meshInstances.push(mi);
+                switch (type) {
+                    case "handler":
+                        _this.handlerMeshInstances.push(mi);
+                        break;
+                    case "picker":
+                        _this.pickerMeshInstances.push(mi);
+                        break;
+                }
+            });
+        };
+        for (var name in gizmos) {
+            _loop_1(name);
+        }
+    };
+    return GizmoTransformInstance;
+}());
+
+var GizmoTranslate = /** @class */ (function (_super) {
+    __extends(GizmoTranslate, _super);
+    function GizmoTranslate(app) {
+        var _this = _super.call(this, app) || this;
+        _this.handlerGizmos = {
+            X: [
+                _this.createLine([0, 0, 0, 1, 0, 0], [1, 0, 0, 1]),
+                _this.createArrow([0.9, 0, 0], [0, 0, -90], [0.1, 0.2, 0.1], [1, 0, 0, 1])
+            ],
+            Y: [
+                _this.createLine([0, 0, 0, 0, 1, 0], [0, 1, 0, 1]),
+                _this.createArrow([0, 0.9, 0], [0, 0, 0], [0.1, 0.2, 0.1], [0, 1, 0, 1])
+            ],
+            Z: [
+                _this.createLine([0, 0, 0, 0, 0, 1], [0, 0, 1, 1]),
+                _this.createArrow([0, 0, 0.9], [90, 0, 0], [0.1, 0.2, 0.1], [0, 0, 1, 1])
+            ],
+            XY: [
+                _this.createPlane([0.15, 0.15, 0], [90, 0, 0], [0.3, 0.3, 0.3], [0, 0, 1, 0.25])
+            ],
+            XZ: [
+                _this.createPlane([0.15, 0, 0.15], [0, 0, 0], [0.3, 0.3, 0.3], [0, 1, 0, 0.25])
+            ],
+            YZ: [
+                _this.createPlane([0, 0.15, 0.15], [0, 0, -90], [0.3, 0.3, 0.3], [1, 0, 0, 0.25])
+            ]
+        };
+        _this.pickerGizmos = {
+            X: [
+                _this.createCylinder([0.65, 0, 0], [0, 0, -90], [0.2, 0.7, 0.2], [1, 0, 0, 0])
+            ],
+            Y: [
+                _this.createCylinder([0, 0.65, 0], [0, 0, 0], [0.2, 0.7, 0.2], [0, 1, 0, 0])
+            ],
+            Z: [
+                _this.createCylinder([0, 0, 0.65], [90, 0, 0], [0.2, 0.7, 0.2], [0, 0, 1, 0])
+            ],
+            XY: [
+                _this.createPlane([0.15, 0.15, 0], [90, 0, 0], [0.3, 0.3, 0.3], [0, 0, 1, 0])
+            ],
+            XZ: [
+                _this.createPlane([0.15, 0, 0.15], [0, 0, 0], [0.3, 0.3, 0.3], [0, 1, 0, 0.1])
+            ],
+            YZ: [
+                _this.createPlane([0, 0.15, 0.15], [0, 0, -90], [0.3, 0.3, 0.3], [1, 0, 0, 0.1])
+            ]
+        };
+        _this.setupMeshInstances("handler", _this.handlerGizmos);
+        _this.setupMeshInstances("picker", _this.pickerGizmos);
+        _this.root.model.model = _this.model;
+        return _this;
+    }
+    GizmoTranslate.prototype.createLine = function (positions, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createLines(this.app.$.graphicsDevice, positions);
+        var material = new pc.BasicMaterial();
+        material._color = color;
+        material.depthTest = false;
+        material.depthWrite = false;
+        material.color = new pc.Color(color);
+        material.update();
+        var meshInstance = new pc.MeshInstance(node, mesh, material);
+        meshInstance.layer = pc.LAYER_GIZMO;
+        return meshInstance;
+    };
+    GizmoTranslate.prototype.createArrow = function (position, rotation, scale, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createCone(this.app.$.graphicsDevice);
+        var material = new pc.BasicMaterial();
+        node.setLocalPosition.apply(node, position);
+        node.setLocalEulerAngles.apply(node, rotation);
+        node.setLocalScale.apply(node, scale);
+        material._color = color;
+        material.depthTest = false;
+        material.depthWrite = false;
+        material.color = new pc.Color(color);
+        material.update();
+        var meshInstance = new pc.MeshInstance(node, mesh, material);
+        meshInstance.layer = pc.LAYER_GIZMO;
+        return meshInstance;
+    };
+    GizmoTranslate.prototype.createCylinder = function (position, rotation, scale, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createCylinder(this.app.$.graphicsDevice);
+        var material = new pc.BasicMaterial();
+        node.setLocalPosition.apply(node, position);
+        node.setLocalEulerAngles.apply(node, rotation);
+        node.setLocalScale.apply(node, scale);
+        material.color = new pc.Color(color);
+        material.blend = true;
+        material.blendSrc = pc.BLENDMODE_SRC_ALPHA;
+        material.blendDst = pc.BLENDMODE_ONE_MINUS_SRC_ALPHA;
+        material.update();
+        return new pc.MeshInstance(node, mesh, material);
+    };
+    GizmoTranslate.prototype.createPlane = function (position, rotation, scale, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createPlane(this.app.$.graphicsDevice);
+        var material = new pc.BasicMaterial();
+        node.setLocalPosition.apply(node, position);
+        node.setLocalEulerAngles.apply(node, rotation);
+        node.setLocalScale.apply(node, scale);
+        material._color = color;
+        material.depthTest = false;
+        material.depthWrite = false;
+        material.color = new pc.Color(color);
+        material.blend = true;
+        material.blendSrc = pc.BLENDMODE_SRC_ALPHA;
+        material.blendDst = pc.BLENDMODE_ONE_MINUS_SRC_ALPHA;
+        material.update();
+        var meshInstance = new pc.MeshInstance(node, mesh, material);
+        meshInstance.layer = pc.LAYER_GIZMO;
+        return meshInstance;
+    };
+    return GizmoTranslate;
+}(GizmoTransformInstance));
+
+var GizmoRotate = /** @class */ (function (_super) {
+    __extends(GizmoRotate, _super);
+    function GizmoRotate(app) {
+        var _this = _super.call(this, app) || this;
+        _this.handlerGizmos = {
+            X: [
+                _this.createCircle([0, 0, 90], [1, 0, 0, 1])
+            ],
+            Y: [
+                _this.createCircle([0, 0, 0], [0, 1, 0, 1])
+            ],
+            Z: [
+                _this.createCircle([90, 0, 0], [0, 0, 1, 1])
+            ]
+        };
+        _this.pickerGizmos = {
+            X: [
+                _this.createTorus([0, 0, 90], [1, 0, 0, 0])
+            ],
+            Y: [
+                _this.createTorus([0, 0, 0], [0, 1, 0, 0])
+            ],
+            Z: [
+                _this.createTorus([90, 0, 0], [0, 0, 1, 0])
+            ]
+        };
+        _this.setupMeshInstances("handler", _this.handlerGizmos);
+        _this.setupMeshInstances("picker", _this.pickerGizmos);
+        _this.root.model.model = _this.model;
+        return _this;
+    }
+    GizmoRotate.prototype.createCircle = function (rotation, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createCircle(this.app.$.graphicsDevice);
+        var material = new pc.BasicMaterial();
+        node.setEulerAngles.apply(node, rotation);
+        material._color = color;
+        material.depthTest = false;
+        material.depthWrite = false;
+        material.color = new pc.Color(color);
+        material.update();
+        var meshInstance = new pc.MeshInstance(node, mesh, material);
+        meshInstance.layer = pc.LAYER_GIZMO;
+        return meshInstance;
+    };
+    GizmoRotate.prototype.createTorus = function (rotation, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createTorus(this.app.$.graphicsDevice, {
+            tubeRadius: 0.12,
+            ringRadius: 1,
+            segments: 30,
+            sides: 20
+        });
+        var material = new pc.BasicMaterial();
+        node.setEulerAngles.apply(node, rotation);
+        material.color = new pc.Color(color);
+        material.blend = true;
+        material.blendSrc = pc.BLENDMODE_SRC_ALPHA;
+        material.blendDst = pc.BLENDMODE_ONE_MINUS_SRC_ALPHA;
+        material.update();
+        return new pc.MeshInstance(node, mesh, material);
+    };
+    return GizmoRotate;
+}(GizmoTransformInstance));
+
+var GizmoScale = /** @class */ (function (_super) {
+    __extends(GizmoScale, _super);
+    function GizmoScale(app) {
+        var _this = _super.call(this, app) || this;
+        _this.handlerGizmos = {
+            X: [
+                _this.createLine([0, 0, 0, 1, 0, 0], [1, 0, 0, 1]),
+                _this.createBox([0.95, 0, 0], [0.1, 0.1, 0.1], [1, 0, 0, 1])
+            ],
+            Y: [
+                _this.createLine([0, 0, 0, 0, 1, 0], [0, 1, 0, 1]),
+                _this.createBox([0, 0.95, 0], [0.1, 0.1, 0.1], [0, 1, 0, 1])
+            ],
+            Z: [
+                _this.createLine([0, 0, 0, 0, 0, 1], [0, 0, 1, 1]),
+                _this.createBox([0, 0, 0.95], [0.1, 0.1, 0.1], [0, 0, 1, 1])
+            ]
+        };
+        _this.pickerGizmos = {
+            X: [
+                _this.createCylinder([0.65, 0, 0], [0, 0, -90], [0.2, 0.7, 0.2], [1, 0, 0, 0])
+            ],
+            Y: [
+                _this.createCylinder([0, 0.65, 0], [0, 0, 0], [0.2, 0.7, 0.2], [0, 1, 0, 0])
+            ],
+            Z: [
+                _this.createCylinder([0, 0, 0.65], [90, 0, 0], [0.2, 0.7, 0.2], [0, 0, 1, 0])
+            ]
+        };
+        _this.setupMeshInstances("handler", _this.handlerGizmos);
+        _this.setupMeshInstances("picker", _this.pickerGizmos);
+        _this.root.model.model = _this.model;
+        return _this;
+    }
+    GizmoScale.prototype.createLine = function (positions, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createLines(this.app.$.graphicsDevice, positions);
+        var material = new pc.BasicMaterial();
+        material._color = color;
+        material.depthTest = false;
+        material.depthWrite = false;
+        material.color = new pc.Color(color);
+        material.update();
+        var meshInstance = new pc.MeshInstance(node, mesh, material);
+        meshInstance.layer = pc.LAYER_GIZMO;
+        return meshInstance;
+    };
+    GizmoScale.prototype.createBox = function (position, scale, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createBox(this.app.$.graphicsDevice);
+        var material = new pc.BasicMaterial();
+        node.setLocalPosition.apply(node, position);
+        node.setLocalScale.apply(node, scale);
+        material._color = color;
+        material.depthTest = false;
+        material.depthWrite = false;
+        material.color = new pc.Color(color);
+        material.update();
+        var meshInstance = new pc.MeshInstance(node, mesh, material);
+        meshInstance.layer = pc.LAYER_GIZMO;
+        return meshInstance;
+    };
+    GizmoScale.prototype.createCylinder = function (position, rotation, scale, color) {
+        var node = new pc.GraphNode();
+        var mesh = pc.createCylinder(this.app.$.graphicsDevice);
+        var material = new pc.BasicMaterial();
+        node.setLocalPosition.apply(node, position);
+        node.setLocalEulerAngles.apply(node, rotation);
+        node.setLocalScale.apply(node, scale);
+        material.color = new pc.Color(color);
+        material.blend = true;
+        material.blendSrc = pc.BLENDMODE_SRC_ALPHA;
+        material.blendDst = pc.BLENDMODE_ONE_MINUS_SRC_ALPHA;
+        material.update();
+        return new pc.MeshInstance(node, mesh, material);
+    };
+    return GizmoScale;
+}(GizmoTransformInstance));
+
+var GizmoTransform = /** @class */ (function (_super) {
+    __extends(GizmoTransform, _super);
+    function GizmoTransform(app) {
+        var _this = _super.call(this, app) || this;
+        _this._mode = "translate";
+        var controls = GizmoTransformControls$1(app);
+        _this.planes = {
+            XY: new pc.Plane(new pc.Vec3(0, 0, 0), new pc.Vec3(0, 0, 1)),
+            XZ: new pc.Plane(new pc.Vec3(0, 0, 0), new pc.Vec3(0, 1, 0)),
+            YZ: new pc.Plane(new pc.Vec3(0, 0, 0), new pc.Vec3(1, 0, 0))
+        };
+        _this.translate = new GizmoTranslate(app);
+        _this.rotate = new GizmoRotate(app);
+        _this.scale = new GizmoScale(app);
+        _this.targets = [];
+        _this.root = new pc.Entity();
+        _this.root.enabled = false;
+        _this.root.addComponent("script");
+        _this.root.script.create(controls.__name);
+        _this.root.addChild(_this.translate.root);
+        _this.root.addChild(_this.rotate.root);
+        _this.root.addChild(_this.scale.root);
+        _this.app.$.root.addChild(_this.root);
+        _this.mode = _this._mode;
+        return _this;
+    }
+    Object.defineProperty(GizmoTransform.prototype, "mode", {
+        get: function () {
+            return this._mode;
+        },
+        set: function (value) {
+            this._mode = value;
+            this.translate.root.enabled = false;
+            this.rotate.root.enabled = false;
+            this.scale.root.enabled = false;
+            switch (value) {
+                case "translate":
+                    this.translate.root.enabled = true;
+                    break;
+                case "rotate":
+                    this.rotate.root.enabled = true;
+                    break;
+                case "scale":
+                    this.scale.root.enabled = true;
+                    break;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GizmoTransform.prototype, "modeInstance", {
+        get: function () {
+            switch (this._mode) {
+                case "translate":
+                    return this.translate;
+                case "rotate":
+                    return this.rotate;
+                case "scale":
+                    return this.scale;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GizmoTransform.prototype.attach = function (targets) {
+        if (Array.isArray(targets)) {
+            this.targets = targets;
+        }
+        else if (targets instanceof Entity) {
+            this.targets = [targets];
+        }
+        this.root.setPosition(this.targets[0].entity.getPosition());
+        this.root.enabled = true;
+    };
+    GizmoTransform.prototype.detach = function () {
+        this.targets = [];
+        this.root.enabled = false;
+    };
+    GizmoTransform.prototype.destroy = function () {
+        this.app.$.root.removeChild(this.root);
+        this.root.destroy();
+        this.targets = [];
+        this.translate = null;
+    };
+    GizmoTransform.prototype.getPlaneByAxis = function (axis) {
+        switch (this._mode) {
+            case "translate":
+            case "scale":
+                switch (axis) {
+                    case "X":
+                        return this.planes.XY;
+                    case "Y":
+                        return this.planes.XY;
+                    case "Z":
+                        return this.planes.XZ;
+                    default:
+                        return this.planes[axis];
+                }
+            case "rotate":
+                switch (axis) {
+                    case "X":
+                        return this.planes.YZ;
+                    case "Y":
+                        return this.planes.XZ;
+                    case "Z":
+                        return this.planes.XY;
+                }
+        }
+    };
+    GizmoTransform.prototype.updatePlanes = function () {
+        this.planes.XY.point.copy(this.root.getPosition());
+        this.planes.XZ.point.copy(this.root.getPosition());
+        this.planes.YZ.point.copy(this.root.getPosition());
+    };
+    return GizmoTransform;
+}(Gizmo));
+
+var GizmoManager = /** @class */ (function () {
+    function GizmoManager(app) {
+        this.app = app;
+    }
+    GizmoManager.prototype.create = function (type) {
+        switch (type) {
+            case GIZMO_GRID:
+                this.grid = new GizmoGrid(this.app);
+                break;
+            case GIZMO_AABB:
+                this.aabb = new GizmoAabb(this.app);
+                break;
+            case GIZMO_TRANSFORM:
+                this.transform = new GizmoTransform(this.app);
+                break;
+        }
+        return this;
+    };
+    GizmoManager.prototype.remove = function (type) {
+        switch (type) {
+            case GIZMO_GRID:
+                this.grid.destroy();
+                this.grid = null;
+                break;
+            case GIZMO_AABB:
+                this.aabb.destroy();
+                this.aabb = null;
+                break;
+        }
+        return this;
+    };
+    return GizmoManager;
 }());
 
 var AnimationCycleMode;
@@ -1263,10 +1833,83 @@ function enhance() {
         this.on(name, callback, scope, priority);
         return this;
     };
+    pc.events.fire2 = function (name, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) {
+        if (!name || !this._callbacks || !this._callbacks[name])
+            return this;
+        var callbacks;
+        if (!this._callbackActive)
+            this._callbackActive = {};
+        if (!this._callbackActive[name]) {
+            this._callbackActive[name] = this._callbacks[name];
+        }
+        else {
+            if (this._callbackActive[name] === this._callbacks[name])
+                this._callbackActive[name] = this._callbackActive[name].slice();
+            callbacks = this._callbacks[name].slice();
+        }
+        for (var i = 0; (callbacks || this._callbackActive[name]) && (i < (callbacks || this._callbackActive[name]).length); i++) {
+            var evt = (callbacks || this._callbackActive[name])[i];
+            evt.callback.call(evt.scope, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            if (evt.callback.once) {
+                var ind = this._callbacks[name].indexOf(evt);
+                if (ind !== -1) {
+                    if (this._callbackActive[name] === this._callbacks[name])
+                        this._callbackActive[name] = this._callbackActive[name].slice();
+                    this._callbacks[name].splice(ind, 1);
+                }
+            }
+            if (arg1._stopPropagation)
+                break;
+        }
+        if (!callbacks)
+            this._callbackActive[name] = null;
+        return this;
+    };
+    pc.MouseEvent.prototype.stopPropagation = function () {
+        this._stopPropagation = true;
+    };
 }
 //# sourceMappingURL=events.js.map
 
 function enhance$1() {
+    pc.createLines = function (device, positions) {
+        var numVerts = positions.length / 3;
+        var vertexFormat = new pc.VertexFormat(device, [
+            { semantic: pc.SEMANTIC_POSITION, components: 3, type: pc.TYPE_FLOAT32 }
+        ]);
+        var vertexBuffer = new pc.VertexBuffer(device, vertexFormat, numVerts);
+        var vertexIterator = new pc.VertexIterator(vertexBuffer);
+        for (var i = 0; i < numVerts; i++) {
+            vertexIterator.element[pc.SEMANTIC_POSITION].set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+            vertexIterator.next();
+        }
+        vertexIterator.end();
+        var mesh = new pc.Mesh();
+        mesh.primitive[0].type = pc.PRIMITIVE_LINES;
+        mesh.primitive[0].base = 0;
+        mesh.primitive[0].count = numVerts;
+        mesh.primitive[0].indexed = false;
+        mesh.vertexBuffer = vertexBuffer;
+        return mesh;
+    };
+    pc.createCircle = function (device, radius, segments) {
+        if (radius === void 0) { radius = 1; }
+        if (segments === void 0) { segments = 72; }
+        var positions = [];
+        for (var i = 0; i < segments; i++) {
+            var rad = 2 * Math.PI * (i / segments);
+            var x = Math.cos(rad) * radius;
+            var z = Math.sin(rad) * radius;
+            positions.push(x, 0, z);
+        }
+        var mesh = pc.createLines(device, positions);
+        mesh.primitive[0].type = pc.PRIMITIVE_LINELOOP;
+        return mesh;
+    };
+}
+//# sourceMappingURL=procedural.js.map
+
+function enhance$2() {
     pc.Ray.prototype.intersectTriangle = (function () {
         var diff = new pc.Vec3();
         var edge1 = new pc.Vec3();
@@ -1327,7 +1970,7 @@ function enhance$1() {
 }
 //# sourceMappingURL=ray.js.map
 
-function enhance$2() {
+function enhance$3() {
     pc.MeshInstance.prototype.intersectsRay = (function () {
         var localRay = new pc.Ray();
         var distance = new pc.Vec3();
@@ -1474,7 +2117,14 @@ function enhance$2() {
 }
 //# sourceMappingURL=mesh.js.map
 
-function enhance$3() {
+function enhance$4() {
+    pc.Entity.prototype.getApplication = function () {
+        return this._app;
+    };
+}
+//# sourceMappingURL=entity.js.map
+
+function enhance$5() {
     pc.BoundingBox.prototype.toJSON = function () {
         return {
             center: Array.from(this.center.data),
@@ -1484,7 +2134,7 @@ function enhance$3() {
 }
 //# sourceMappingURL=boundingBox.js.map
 
-function enhance$4() {
+function enhance$6() {
     pc.Texture.prototype.toJSON = (function () {
         var fields = [
             "name",
@@ -1538,7 +2188,7 @@ function enhance$4() {
 }
 //# sourceMappingURL=texture.js.map
 
-function enhance$5() {
+function enhance$7() {
     pc.StandardMaterial.prototype.toJSON = (function () {
         var fields = [
             "alphaTest", "alphaToCoverage",
@@ -1650,6 +2300,8 @@ function enhancePlayCanvas() {
     enhance$3();
     enhance$4();
     enhance$5();
+    enhance$6();
+    enhance$7();
 }
 //# sourceMappingURL=index.js.map
 
@@ -1663,6 +2315,7 @@ var Application = /** @class */ (function () {
         this.$.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
         this.$.setCanvasResolution(pc.RESOLUTION_AUTO);
         this.$.loader.getHandler(pc.ASSET_TEXTURE).crossOrigin = true;
+        this.$.root.name = "Application Root";
         this.$.start();
         this.entities = new EntityManager(this);
         this.textures = new TextureManager(this);
@@ -1679,9 +2332,11 @@ var Application = /** @class */ (function () {
         AnimationController$1(this);
         if (this.$.mouse) {
             pc.events.attach(this.$.mouse);
+            this.$.mouse.fire = pc.events.fire2;
         }
         if (this.$.touch) {
             pc.events.attach(this.$.touch);
+            this.$.touch.fire = pc.events.fire2;
         }
         if (this.$.keyboard) {
             pc.events.attach(this.$.keyboard);
@@ -2070,6 +2725,7 @@ var OrbitCameraMouseInput = /** @class */ (function (_super) {
                 this.panButtonDown = true;
                 break;
         }
+        this.app.fire("app:camera:movestart");
     };
     OrbitCameraMouseInput.prototype.onMouseUp = function (event) {
         var _this = this;
@@ -2092,17 +2748,18 @@ var OrbitCameraMouseInput = /** @class */ (function (_super) {
         if (this.lookButtonDown) {
             this.orbitCamera.pitch -= event.dy * this.orbitSensitivity;
             this.orbitCamera.yaw -= event.dx * this.orbitSensitivity;
-            this.app.fire("app:camera:movestart");
+            this.app.fire("app:camera:move");
         }
         else if (this.panButtonDown) {
             this.pan(event);
-            this.app.fire("app:camera:movestart");
+            this.app.fire("app:camera:move");
         }
         this.lastPoint.set(event.x, event.y);
     };
     OrbitCameraMouseInput.prototype.onMouseWheel = function (event) {
-        this.orbitCamera.distance -= event.wheel * this.distanceSensitivity * (this.orbitCamera.distance * 0.1);
         event.event.preventDefault();
+        this.orbitCamera.distance -= event.wheel * this.distanceSensitivity * (this.orbitCamera.distance * 0.1);
+        this.app.fire("app:camera:move");
     };
     OrbitCameraMouseInput.prototype._onMouseOut = function () {
         this.lookButtonDown = false;
@@ -2188,9 +2845,17 @@ var OrbitCameraTouchInput = /** @class */ (function (_super) {
             this.lastPinchDistance = this.getPinchDistance(touches[0], touches[1]);
             this.calcMidPoint(touches[0], touches[1], this.lastPinchMidPoint);
         }
-        setTimeout(function () {
-            _this.app.fire("app:camera.moveend");
-        }, 250);
+        switch (event.event.type) {
+            case "touchstart":
+                this.app.fire("app:camera:movestart");
+                break;
+            case "touchend":
+            case "touchcancel":
+                setTimeout(function () {
+                    _this.app.fire("app:camera:moveend");
+                }, 250);
+                break;
+        }
     };
     OrbitCameraTouchInput.prototype.pan = function (midPoint) {
         var fromWorldPoint = OrbitCameraTouchInput.fromWorldPoint;
@@ -2215,7 +2880,7 @@ var OrbitCameraTouchInput = /** @class */ (function (_super) {
             this.orbitCamera.pitch -= (touch.y - this.lastTouchPoint.y) * this.orbitSensitivity;
             this.orbitCamera.yaw -= (touch.x - this.lastTouchPoint.x) * this.orbitSensitivity;
             this.lastTouchPoint.set(touch.x, touch.y);
-            this.app.fire("app:camera:movestart");
+            this.app.fire("app:camera:move");
         }
         else if (touches.length === 2) {
             // Calculate the difference in pinch distance since the last event
@@ -2228,7 +2893,7 @@ var OrbitCameraTouchInput = /** @class */ (function (_super) {
             this.calcMidPoint(touches[0], touches[1], pinchMidPoint);
             if (Math.abs(diffInPinchDistance) <= this.pinchSensitivity) {
                 this.pan(pinchMidPoint);
-                this.app.fire("app:camera:movestart");
+                this.app.fire("app:camera:move");
             }
             this.lastPinchMidPoint.copy(pinchMidPoint);
         }
