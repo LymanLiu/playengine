@@ -68,12 +68,6 @@ app.$.root.addChild(cube3.entity);
 app.$.root.addChild(cube4.entity);
 app.$.root.addChild(cube5.entity);
 
-app.$.scene.skyboxIntensity = 1;
-app.$.scene.skyboxMip = 1;
-app.$.scene.abmientLight = new pc.Color(0.2, 0.2, 0.2);
-app.$.scene.gammaCorrection = 2;
-app.$.scene.toneMapping = 3;
-
 camera.entity.script.orbitCamera.focus(cube.entity);
 app.selection.attach(camera);
 app.gizmos.grid.attach();
