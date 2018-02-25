@@ -1429,6 +1429,7 @@ var GizmoTransform = /** @class */ (function (_super) {
             this.translate.root.enabled = false;
             this.rotate.root.enabled = false;
             this.scale.root.enabled = false;
+            this.root.setRotation(this.rootQuat);
             switch (value) {
                 case "translate":
                     this.translate.root.enabled = true;
@@ -1458,6 +1459,18 @@ var GizmoTransform = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(GizmoTransform.prototype, "rootQuat", {
+        get: function () {
+            if (this._mode === "scale" && this.targets.length > 0) {
+                return this.targets[0].entity.getRotation();
+            }
+            else {
+                return pc.Quat.IDENTITY;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     GizmoTransform.prototype.attach = function (targets) {
         if (Array.isArray(targets)) {
             this.targets = targets;
@@ -1466,6 +1479,7 @@ var GizmoTransform = /** @class */ (function (_super) {
             this.targets = [targets];
         }
         this.root.setPosition(this.targets[0].entity.getPosition());
+        this.root.setRotation(this.rootQuat);
         this.root.enabled = true;
     };
     GizmoTransform.prototype.detach = function () {
