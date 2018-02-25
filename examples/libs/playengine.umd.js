@@ -661,10 +661,15 @@ var EntityManager = /** @class */ (function () {
         }
         return this;
     };
-    EntityManager.prototype.list = function () {
+    EntityManager.prototype.list = function (filter) {
         var result = [];
         for (var uid in this._items) {
-            if (this._items.hasOwnProperty(uid)) {
+            if (filter) {
+                if (filter(this._items[uid])) {
+                    result.push(this._items[uid]);
+                }
+            }
+            else {
                 result.push(this._items[uid]);
             }
         }
@@ -1807,13 +1812,16 @@ var Selection = /** @class */ (function () {
         this.checkCamera();
         this.prepareRay(x, y);
         var result = null;
+        var distance = Infinity;
+        var intersection = null;
         var ray = this.worldRay;
-        var entities = this.app.entities.list();
+        var entities = this.app.entities.list(function (entity) { return entity instanceof Model; });
         for (var _i = 0, entities_2 = entities; _i < entities_2.length; _i++) {
             var entity = entities_2[_i];
-            if (entity instanceof Model && ray.intersectsMeshInstances(entity.model.meshInstances)) {
+            intersection = ray.intersectsMeshInstances(entity.model.meshInstances);
+            if (intersection && intersection[0].distance < distance) {
                 result = entity;
-                break;
+                distance = intersection[0].distance;
             }
         }
         return result;

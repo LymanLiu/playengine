@@ -1,6 +1,7 @@
 import { Application } from "./application";
 import { Camera } from "./entities/camera";
 import { Model } from "./entities/model";
+import { Entity } from "./entities/entity";
 
 export default class Selection {
     private app: Application;
@@ -98,13 +99,16 @@ export default class Selection {
         this.prepareRay(x, y);
 
         let result = null;
+        let distance = Infinity;
+        let intersection = null;
         let ray = this.worldRay;
-        let entities = this.app.entities.list();
+        let entities = this.app.entities.list((entity: Entity) => entity instanceof Model) as Model[];
 
         for (let entity of entities) {
-            if (entity instanceof Model && ray.intersectsMeshInstances(entity.model.meshInstances)) {
+            intersection = ray.intersectsMeshInstances(entity.model.meshInstances);
+            if (intersection && intersection[0].distance < distance) {
                 result = entity;
-                break;
+                distance = intersection[0].distance;
             }
         }
 
