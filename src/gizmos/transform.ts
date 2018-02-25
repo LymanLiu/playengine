@@ -61,6 +61,7 @@ export default class GizmoTransform extends Gizmo {
         this.translate.root.enabled = false;
         this.rotate.root.enabled = false;
         this.scale.root.enabled = false;
+        this.root.setRotation(this.rootQuat);
 
         switch (value) {
             case "translate":
@@ -87,6 +88,14 @@ export default class GizmoTransform extends Gizmo {
         }
     }
 
+    get rootQuat(): pc.Quat {
+        if (this._mode === "scale" && this.targets.length > 0) {
+            return this.targets[0].entity.getRotation();
+        } else {
+            return pc.Quat.IDENTITY;
+        }
+    }
+
     public attach(targets: Entity | Entity[]) {
         if (Array.isArray(targets)) {
             this.targets = targets;
@@ -95,6 +104,7 @@ export default class GizmoTransform extends Gizmo {
         }
 
         this.root.setPosition(this.targets[0].entity.getPosition());
+        this.root.setRotation(this.rootQuat);
         this.root.enabled = true;
     }
 
