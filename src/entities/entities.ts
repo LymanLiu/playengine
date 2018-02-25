@@ -5,6 +5,8 @@ interface EntityManagerItems {
     [uid: string]: Entity;
 }
 
+export type EntityFilter = (entity: Entity) => boolean;
+
 export default class EntityManager {
     private app: Application;
     private _items: EntityManagerItems;
@@ -39,11 +41,15 @@ export default class EntityManager {
         return this;
     }
 
-    public list() {
+    public list(filter?: EntityFilter) {
         let result = [];
 
         for (let uid in this._items) {
-            if (this._items.hasOwnProperty(uid)) {
+            if (filter) {
+                if (filter(this._items[uid])) {
+                    result.push(this._items[uid]);
+                }
+            } else {
                 result.push(this._items[uid]);
             }
         }
