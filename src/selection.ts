@@ -93,6 +93,24 @@ export default class Selection {
         return result;
     }
 
+    public select2(x: number, y: number) {
+        this.checkCamera();
+        this.prepareRay(x, y);
+
+        let result = null;
+        let ray = this.worldRay;
+        let entities = this.app.entities.list();
+
+        for (let entity of entities) {
+            if (entity instanceof Model && ray.intersectsMeshInstances(entity.model.meshInstances)) {
+                result = entity;
+                break;
+            }
+        }
+
+        return result;
+    }
+
     private checkCamera() {
         if (!this.camera) {
             throw Error("No camera found, please use selection.attach first.");

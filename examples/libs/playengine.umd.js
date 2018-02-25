@@ -1803,6 +1803,21 @@ var Selection = /** @class */ (function () {
         }
         return result;
     };
+    Selection.prototype.select2 = function (x, y) {
+        this.checkCamera();
+        this.prepareRay(x, y);
+        var result = null;
+        var ray = this.worldRay;
+        var entities = this.app.entities.list();
+        for (var _i = 0, entities_2 = entities; _i < entities_2.length; _i++) {
+            var entity = entities_2[_i];
+            if (entity instanceof Model && ray.intersectsMeshInstances(entity.model.meshInstances)) {
+                result = entity;
+                break;
+            }
+        }
+        return result;
+    };
     Selection.prototype.checkCamera = function () {
         if (!this.camera) {
             throw Error("No camera found, please use selection.attach first.");

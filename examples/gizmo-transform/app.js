@@ -81,7 +81,7 @@ app.$.on('app:camera:moveend', function() {
 app.$.mouse.on('mouseup', function(e) {
     if (isCameraMoving) return;
 
-    var target = app.selection.select(e.x, e.y);
+    var target = app.selection.select2(e.x, e.y);
     app.gizmos.aabb.detach();
     app.gizmos.transform.detach();
 
